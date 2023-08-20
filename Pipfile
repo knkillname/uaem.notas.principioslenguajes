@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+ipykernel = "~=6.25"
+matplotlib = "~=3.7"
+networkx = "~=3.1"
+numpy = "~=1.25"
+pandas = "~=2.0"
+scipy = "~=1.11"
+sympy = "~=1.12"
+
+[dev-packages]
+black = "~=23.7"
+isort = "~=5.11"
+mypy = "~=1.5"
+pylint = "~= 2.17"
+rope = "~=1.9"
+
+[requires]
+python_version = "3.11"

@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "materiales"
+version = "0.1.0"
+authors = [
+    {name = "Mario Abarca", email = "mario.abarca@uaem.edu.mx"}
+]
+readme = "README.md"
+requires-python = ">=3.11.0"
+license = "GPL-3.0-or-later"
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+
+[tool.isort]
+profile = "black"
+
