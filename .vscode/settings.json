@@ -1,0 +1,27 @@
+{
+    "[python]": {
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+        },
+        "diffEditor.ignoreTrimWhitespace": false,
+        "editor.rulers": [
+            72,
+            88
+        ],
+        "editor.wordBasedSuggestions": false,
+        "editor.defaultFormatter": "ms-python.black-formatter",
+    },
+    "black-formatter.importStrategy": "fromEnvironment",
+    "editor.formatOnSave": true,
+    "editor.rulers": [
+        80
+    ],
+    "mypy-type-checker.importStrategy": "fromEnvironment",
+    "pylint.importStrategy": "fromEnvironment",
+    "python.defaultInterpreterPath": ".venv/bin/python",
+    "python.languageServer": "Pylance",
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "python.terminal.activateEnvironment": true,
+    "python.testing.unittestEnabled": true,
+    "terminal.integrated.defaultProfile.linux": "bash",
+}
