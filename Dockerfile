@@ -5,8 +5,9 @@ ENV UID=1000
 
 RUN apt-get update && apt-get install -y \
     build-essential \
-    openjdk-17-jdk \
-    pipenv
+    pipenv \
+    python3-full \
+    python3-pip
 
 RUN groupadd -g ${GID} ${USER} && \
     useradd -m -u ${UID} -g ${GID} ${USER}
