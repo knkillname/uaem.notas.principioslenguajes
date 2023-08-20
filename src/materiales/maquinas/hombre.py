@@ -1,5 +1,6 @@
+import collections
 import enum
-from collections.abc import Iterable, MutableSequence, Sequence
+from collections.abc import Iterable, Sequence
 
 Memoria = Sequence[int]
 
@@ -20,7 +21,7 @@ class Operador(enum.IntEnum):
     STA : int
         3xx guarda el valor del acumulador en la posicion xx
     LDA : int
-        5xx carga el valor de la posicion xx en el acumulador
+        5xx carga el valor de la posición xx en el acumulador
     BRA : int
         6xx salta a la posicion xx
     BRZ : int
@@ -48,16 +49,7 @@ class Operador(enum.IntEnum):
 
 
 class ComputadoraDetenida(Exception):
-    """Excepción que se levanta cuando la computadora se detiene.
-
-    Atributos
-    ---------
-    salida : list[int]
-        Salida de la computadora.
-    """
-
-    def __init__(self, salida: list[int]):
-        self.salida = salida
+    """Excepción que se levanta cuando la computadora se detiene."""
 
 
 class ComputadoraHombrePequenno:
@@ -71,29 +63,41 @@ class ComputadoraHombrePequenno:
         Contador de programa.
     acumulador : int
         Acumulador de la computadora.
-    entrada : list[int]
+    entrada : deque[int]
         Entrada de la computadora.
-    salida : list[int]
+    salida : deque[int]
         Salida de la computadora.
     """
 
     def __init__(
         self,
+        *,
         programa: Memoria = (),
         contador: int = 0,
         acumulador: int = 0,
         entrada: Iterable[int] = (),
         salida: Iterable[int] = (),
     ):
-        self.memoria: MutableSequence[int] = [0] * 100
-        self.contador: int = int(contador)
-        self.acumulador: int = int(acumulador)
+        self.memoria: list[int]
+        self.contador: int
+        self.acumulador: int
+        self.entrada: collections.deque
+        self.salida: collections.deque
+        self.reiniciar()
 
         self.cargar_programa(programa)
+        self.contador = int(contador)
+        self.acumulador = int(acumulador)
+        self.cargar_entrada(entrada)
+        self.salida.extend(salida)
 
-        # Estos atributos se fijarán durante la ejecución
-        self.entrada: list[int] = list(entrada)
-        self.salida: list[int] = list(salida)
+    def reiniciar(self) -> None:
+        """Reinicia la computadora."""
+        self.memoria = [0] * 100
+        self.contador = 0
+        self.acumulador = 0
+        self.entrada = collections.deque()
+        self.salida = collections.deque()
 
     def cargar_programa(self, programa: Memoria) -> None:
         """Carga un programa en la memoria de la computadora.
@@ -112,7 +116,17 @@ class ComputadoraHombrePequenno:
             raise ValueError("El programa no cabe en la memoria")
         self.memoria[: len(programa)] = programa
 
-    def ciclo_de_instruccion(self) -> None:
+    def cargar_entrada(self, entrada: Iterable[int]) -> None:
+        """Carga una entrada en la computadora.
+
+        Parámetros
+        ----------
+        entrada : Iterable[int]
+            Entrada a cargar en la computadora.
+        """
+        self.entrada.extend(entrada)
+
+    def transicion(self) -> bool:
         """Realiza un ciclo de instrucción de la computadora.
 
         Un ciclo de instrucción consiste en:
@@ -125,11 +139,15 @@ class ComputadoraHombrePequenno:
         ValueError
             Si la instrucción no es válida.
         """
-        instruccion = self.traer_instruccion()
-        operador, operando = self.decodificar_instruccion(instruccion)
-        self.ejecutar_instruccion(operador, operando)
+        try:
+            instruccion = self._traer_instruccion()
+            operador, operando = self._decodificar_instruccion(instruccion)
+            self._ejecutar_instruccion(operador, operando)
+        except ComputadoraDetenida:
+            return False
+        return True
 
-    def traer_instruccion(self) -> int:
+    def _traer_instruccion(self) -> int:
         """Obtiene la siguiente instrucción de la memoria.
 
         Retorna
@@ -140,17 +158,16 @@ class ComputadoraHombrePequenno:
         Levanta
         -------
         ComputadoraDetenida
-            Si la computadora se detiene.
+            Si la computadora está detenida.
         """
         try:
             instruccion = self.memoria[self.contador]
-        except IndexError:
-            instruccion = 0
-        else:
-            self.contador += 1
+        except IndexError as exc:
+            raise ComputadoraDetenida(self.salida) from exc
+        self.contador += 1
         return instruccion
 
-    def decodificar_instruccion(self, instuccion: int) -> tuple[Operador, int]:
+    def _decodificar_instruccion(self, instuccion: int) -> tuple[Operador, int]:
         """Decodifica una instruccion de la computadora.
 
         Parámetros
@@ -173,7 +190,7 @@ class ComputadoraHombrePequenno:
             operador, operando = instuccion, 0
         return Operador(operador), operando
 
-    def ejecutar_instruccion(self, operador: Operador, operando: int):
+    def _ejecutar_instruccion(self, operador: Operador, operando: int):
         """Ejecuta una instrucción de la computadora.
 
         Parámetros
@@ -206,11 +223,11 @@ class ComputadoraHombrePequenno:
                 if self.acumulador > 0:
                     self.contador = operando
             case Operador.INP:
-                self.acumulador = next(self.entrada)
+                self.acumulador = self.entrada.popleft()
             case Operador.OUT:
                 self.salida.append(self.acumulador)
             case Operador.HLT:
-                raise ComputadoraDetenida(self.salida)
+                self.contador = len(self.memoria)
 
     def ejecutar_programa(self, entrada: Iterable[int]) -> list[int]:
         """Ejecuta el programa cargado en la computadora.
@@ -229,7 +246,7 @@ class ComputadoraHombrePequenno:
         self.salida = []
         try:
             while True:
-                self.ciclo_de_instruccion()
+                self.transicion()
         except ComputadoraDetenida:
             pass
         return self.salida
@@ -250,3 +267,57 @@ class ComputadoraHombrePequenno:
             f"entrada={self.entrada}, "
             f"salida={self.salida})"
         )
+
+    def __str__(self) -> str:
+        def ind(i: int) -> str:
+            if i == self.contador:
+                return "→"
+            return " "
+
+        lineas = []
+        lineas.append(
+            f"{self.acumulador:03d} │ " + " ".join(f" X{j}" for j in range(10))
+        )
+        lineas.append("────┼─" + "─" * 39)
+        mem = self.memoria
+        for i in range(10):
+            rango = range(i * 10, i * 10 + 10)
+            lineas.append(f" {i}X │" + "".join(f"{ind(i)}{mem[i]:03d}" for i in rango))
+        return "\n".join(lineas)
+
+    def _repr_html_(self):
+        def cola(elementos: Iterable[int]) -> str:
+            return f"[{', '.join(f'<code>{i:03d}</code>' for i in elementos)}]"
+
+        def td(s: str, highlight: bool = False) -> str:
+            if highlight:
+                s = f"▶️{s}"
+            # Set font to monospace
+            return f"<td><code>{s}</code></td>"
+
+        def th(s: str) -> str:
+            return f"<th><strong>{s}</strong></th>"
+
+        lineas = []
+        lineas.append(f"↓{cola(self.entrada)}")
+        lineas.append("<table>")
+        lineas.append(
+            "<tr>"
+            + td(f"{self.acumulador:03d}")
+            + "".join(th(f"X{j}") for j in range(10))
+            + "</tr>"
+        )
+        for i in range(10):
+            rango = range(i * 10, i * 10 + 10)
+            lineas.append(
+                "<tr>"
+                + th(f"{i}X")
+                + "".join(
+                    td(f"{self.memoria[i]:03d}", highlight=i == self.contador)
+                    for i in rango
+                )
+                + "</tr>"
+            )
+        lineas.append("</table>")
+        lineas.append(f"↓{cola(self.salida)}")
+        return "\n".join(lineas)
