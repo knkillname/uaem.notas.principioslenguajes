@@ -1,7 +1,8 @@
 {
     "[python]": {
         "editor.codeActionsOnSave": {
-            "source.organizeImports": true
+            "source.organizeImports": true,
+            "source.fixAll": true
         },
         "diffEditor.ignoreTrimWhitespace": false,
         "editor.rulers": [
@@ -11,13 +12,16 @@
         "editor.wordBasedSuggestions": false,
         "editor.defaultFormatter": "ms-python.black-formatter",
     },
-    "black-formatter.importStrategy": "fromEnvironment",
+    "black-formatter.importStrategy": "useBundled",
     "editor.formatOnSave": true,
     "editor.rulers": [
         80
     ],
-    "mypy-type-checker.importStrategy": "fromEnvironment",
-    "pylint.importStrategy": "fromEnvironment",
+    "mypy-type-checker.importStrategy": "useBundled",
+    "mypy-type-checker.args": [
+        "--strict"
+    ],
+    "pylint.importStrategy": "useBundled",
     "python.defaultInterpreterPath": ".venv/bin/python",
     "python.languageServer": "Pylance",
     "python.terminal.activateEnvInCurrentTerminal": true,
