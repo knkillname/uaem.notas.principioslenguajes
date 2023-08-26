@@ -21,7 +21,6 @@ import collections
 import enum
 from collections.abc import Iterable, Sequence
 from typing import Self
-import warnings
 
 Memoria = Sequence[int]
 
@@ -89,6 +88,8 @@ class ComputadoraHombrePequenno:
     salida : deque[int]
         Salida de la computadora.
     """
+
+    marcador_pos = "▶"
 
     def __init__(
         self,
@@ -171,8 +172,10 @@ class ComputadoraHombrePequenno:
             self.detener()
         return self
 
-    def detener(self):
+    def detener(self) -> Self:
+        """Detiene la computadora."""
         print("La computadora se detuvo.")
+        return self
 
     def _traer_instruccion(self) -> int:
         """Obtiene la siguiente instrucción de la memoria.
@@ -321,7 +324,7 @@ class ComputadoraHombrePequenno:
         def td_(contenido: str, hombrecito: bool = False) -> str:
             """Crea una celda de una tabla HTML."""
             if hombrecito:
-                contenido = f"▶{contenido}"
+                contenido = f"{self.marcador_pos}{contenido}"
             # Set font to monospace
             return f"<td><code>{contenido}</code></td>"
 
