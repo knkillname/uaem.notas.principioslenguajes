@@ -1,6 +1,27 @@
+"""Computadora del Hombre Pequenno.
+
+Este módulo contiene la implementación de la computadora del Hombre
+Pequeño, una computadora de arquitectura de Von Neumann con 100
+posiciones de memoria, un acumulador, una entrada y una salida.
+
+Más información:
+https://es.wikipedia.org/wiki/Little_man_computer
+
+Clases
+------
+ComputadoraHombrePequenno
+    Computadora del Hombre Pequeño.
+
+Excepciones
+-----------
+ComputadoraDetenida
+    Excepción que se levanta cuando la computadora se detiene.
+"""
 import collections
 import enum
 from collections.abc import Iterable, Sequence
+from typing import Self
+import warnings
 
 Memoria = Sequence[int]
 
@@ -91,15 +112,16 @@ class ComputadoraHombrePequenno:
         self.cargar_entrada(entrada)
         self.salida.extend(salida)
 
-    def reiniciar(self) -> None:
+    def reiniciar(self) -> Self:
         """Reinicia la computadora."""
         self.memoria = [0] * 100
         self.contador = 0
         self.acumulador = 0
         self.entrada = collections.deque()
         self.salida = collections.deque()
+        return self
 
-    def cargar_programa(self, programa: Memoria) -> None:
+    def cargar_programa(self, programa: Memoria) -> Self:
         """Carga un programa en la memoria de la computadora.
 
         Parámetros
@@ -115,8 +137,9 @@ class ComputadoraHombrePequenno:
         if len(programa) > len(self.memoria):
             raise ValueError("El programa no cabe en la memoria")
         self.memoria[: len(programa)] = programa
+        return self
 
-    def cargar_entrada(self, entrada: Iterable[int]) -> None:
+    def cargar_entrada(self, entrada: Iterable[int]) -> Self:
         """Carga una entrada en la computadora.
 
         Parámetros
@@ -125,8 +148,9 @@ class ComputadoraHombrePequenno:
             Entrada a cargar en la computadora.
         """
         self.entrada.extend(entrada)
+        return self
 
-    def transicion(self) -> bool:
+    def transicion(self) -> Self:
         """Realiza un ciclo de instrucción de la computadora.
 
         Un ciclo de instrucción consiste en:
@@ -144,8 +168,11 @@ class ComputadoraHombrePequenno:
             operador, operando = self._decodificar_instruccion(instruccion)
             self._ejecutar_instruccion(operador, operando)
         except ComputadoraDetenida:
-            return False
-        return True
+            self.detener()
+        return self
+
+    def detener(self):
+        print("La computadora se detuvo.")
 
     def _traer_instruccion(self) -> int:
         """Obtiene la siguiente instrucción de la memoria.
@@ -190,7 +217,7 @@ class ComputadoraHombrePequenno:
             operador, operando = instuccion, 0
         return Operador(operador), operando
 
-    def _ejecutar_instruccion(self, operador: Operador, operando: int):
+    def _ejecutar_instruccion(self, operador: Operador, operando: int) -> None:
         """Ejecuta una instrucción de la computadora.
 
         Parámetros
@@ -228,6 +255,7 @@ class ComputadoraHombrePequenno:
                 self.salida.append(self.acumulador)
             case Operador.HLT:
                 self.contador = len(self.memoria)
+                self.detener()
 
     def ejecutar_programa(self, entrada: Iterable[int]) -> list[int]:
         """Ejecuta el programa cargado en la computadora.
@@ -287,33 +315,36 @@ class ComputadoraHombrePequenno:
 
     def _repr_html_(self):
         def cola(elementos: Iterable[int]) -> str:
+            """Crea una cola de elementos HTML."""
             return f"[{', '.join(f'<code>{i:03d}</code>' for i in elementos)}]"
 
-        def td(s: str, highlight: bool = False) -> str:
-            if highlight:
-                s = f"▶️{s}"
+        def td_(contenido: str, hombrecito: bool = False) -> str:
+            """Crea una celda de una tabla HTML."""
+            if hombrecito:
+                contenido = f"▶{contenido}"
             # Set font to monospace
-            return f"<td><code>{s}</code></td>"
+            return f"<td><code>{contenido}</code></td>"
 
-        def th(s: str) -> str:
-            return f"<th><strong>{s}</strong></th>"
+        def th_(contenido: str) -> str:
+            """Crea una celda de encabezado de una tabla HTML."""
+            return f"<th><strong>{contenido}</strong></th>"
 
         lineas = []
         lineas.append(f"↓{cola(self.entrada)}")
         lineas.append("<table>")
         lineas.append(
             "<tr>"
-            + td(f"{self.acumulador:03d}")
-            + "".join(th(f"X{j}") for j in range(10))
+            + td_(f"{self.acumulador:03d}")
+            + "".join(th_(f"X{j}") for j in range(10))
             + "</tr>"
         )
         for i in range(10):
             rango = range(i * 10, i * 10 + 10)
             lineas.append(
                 "<tr>"
-                + th(f"{i}X")
+                + th_(f"{i}X")
                 + "".join(
-                    td(f"{self.memoria[i]:03d}", highlight=i == self.contador)
+                    td_(f"{self.memoria[i]:03d}", hombrecito=i == self.contador)
                     for i in rango
                 )
                 + "</tr>"
