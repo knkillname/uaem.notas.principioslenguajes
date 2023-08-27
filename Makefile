@@ -2,6 +2,7 @@ export PIPENV_VENV_IN_PROJECT=1
 
 .PHONY: clean
 
+default: ".venv"
 ".venv": Pipfile
 	pipenv install --dev
 
