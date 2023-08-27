@@ -68,6 +68,21 @@ class Operador(enum.IntEnum):
     HLT = 0
 
 
+class Estado(enum.IntEnum):
+    """Estados de la computadora Hombre Pequenno.
+
+    Atributos
+    ---------
+    DETENIDA : int
+        La computadora está detenida.
+    ACTIVADA : int
+        La computadora está activada.
+    """
+
+    DETENIDA = enum.auto()
+    ACTIVADA = enum.auto()
+
+
 class ComputadoraDetenida(Exception):
     """Excepción que se levanta cuando la computadora se detiene."""
 
@@ -103,8 +118,9 @@ class ComputadoraHombrePequenno:
         self.memoria: list[int]
         self.contador: int
         self.acumulador: int
-        self.entrada: collections.deque
-        self.salida: collections.deque
+        self.entrada: collections.deque[int]
+        self.salida: collections.deque[int]
+        self.estado: Estado
         self.reiniciar()
 
         self.cargar_programa(programa)
@@ -120,7 +136,40 @@ class ComputadoraHombrePequenno:
         self.acumulador = 0
         self.entrada = collections.deque()
         self.salida = collections.deque()
+        self.estado = Estado.ACTIVADA
         return self
+
+    def _verificar_estado(self) -> None:
+        """Verifica que el estado de la computadora sea válido."""
+        if self.estado == Estado.DETENIDA:
+            return
+        if not -999 <= self.acumulador <= 999:
+            raise ValueError(
+                "Se esperaba un acumulador entre -999 y 999, se recibió "
+                f"{self.acumulador}"
+            )
+        if not 0 <= self.contador <= 100:
+            raise ValueError(
+                f"Se esperaba un contador entre 0 y 100, se recibió {self.contador}"
+            )
+        for i, instruccion in enumerate(self.memoria):
+            if not -999 <= instruccion <= 999:
+                raise ValueError(
+                    f"Se esperaba una instrucción entre -999 y 999, se recibió "
+                    f"{instruccion} en la posición {i}."
+                )
+        for i, entrada in enumerate(self.entrada):
+            if not -999 <= entrada <= 999:
+                raise ValueError(
+                    "Se esperaba una entrada entre -999 y 999, se recibió "
+                    f"{entrada} en la posición {i}."
+                )
+        for i, salida in enumerate(self.salida):
+            if not -999 <= salida <= 999:
+                raise ValueError(
+                    "Se esperaba una salida entre -999 y 999, se recibió "
+                    f"{salida} en la posición {i}."
+                )
 
     def cargar_programa(self, programa: Memoria) -> Self:
         """Carga un programa en la memoria de la computadora.
@@ -135,9 +184,11 @@ class ComputadoraHombrePequenno:
         ValueError
             Si el programa no cabe en la memoria.
         """
-        if len(programa) > len(self.memoria):
+        n_memoria, n_programa = len(self.memoria), len(programa)
+        if n_programa > n_memoria:
             raise ValueError("El programa no cabe en la memoria")
-        self.memoria[: len(programa)] = programa
+        self.memoria[:n_programa] = programa
+        self.memoria[n_programa:] = [0] * (n_memoria - n_programa)
         return self
 
     def cargar_entrada(self, entrada: Iterable[int]) -> Self:
@@ -148,10 +199,10 @@ class ComputadoraHombrePequenno:
         entrada : Iterable[int]
             Entrada a cargar en la computadora.
         """
-        self.entrada.extend(entrada)
+        self.entrada = collections.deque(entrada)
         return self
 
-    def transicion(self) -> Self:
+    def transicion(self, ignorar_detener: bool = True) -> Self:
         """Realiza un ciclo de instrucción de la computadora.
 
         Un ciclo de instrucción consiste en:
@@ -164,16 +215,25 @@ class ComputadoraHombrePequenno:
         ValueError
             Si la instrucción no es válida.
         """
+        self._verificar_estado()
         try:
-            instruccion = self._traer_instruccion()
-            operador, operando = self._decodificar_instruccion(instruccion)
-            self._ejecutar_instruccion(operador, operando)
+            self._transicion()
         except ComputadoraDetenida:
-            self.detener()
+            if ignorar_detener:
+                self.detener()
+            else:
+                raise
         return self
+
+    def _transicion(self) -> None:
+        """Realiza un ciclo de instrucción de la computadora."""
+        instruccion = self._traer_instruccion()
+        operador, operando = self._decodificar_instruccion(instruccion)
+        self._ejecutar_instruccion(operador, operando)
 
     def detener(self) -> Self:
         """Detiene la computadora."""
+        self.estado = Estado.DETENIDA
         print("La computadora se detuvo.")
         return self
 
@@ -237,9 +297,9 @@ class ComputadoraHombrePequenno:
         """
         match operador:
             case Operador.ADD:
-                self.acumulador += self.memoria[operando]
+                self._asignar_acumulador(self.acumulador + self.memoria[operando])
             case Operador.SUB:
-                self.acumulador -= self.memoria[operando]
+                self._asignar_acumulador(self.acumulador - self.memoria[operando])
             case Operador.STA:
                 self.memoria[operando] = self.acumulador
             case Operador.LDA:
@@ -259,28 +319,22 @@ class ComputadoraHombrePequenno:
             case Operador.HLT:
                 self.contador = len(self.memoria)
                 self.detener()
+                raise ComputadoraDetenida()
 
-    def ejecutar_programa(self, entrada: Iterable[int]) -> list[int]:
-        """Ejecuta el programa cargado en la computadora.
+    def _asignar_acumulador(self, valor: int) -> None:
+        if -999 <= valor <= 999:
+            self.acumulador = valor
+        else:
+            raise OverflowError()
 
-        Parámetros
-        ----------
-        entrada : Iterable[int]
-            Entrada para la computadora.
-
-        Retorna
-        -------
-        list[int]
-            Salida de la computadora.
-        """
-        self.entrada = iter(entrada)
-        self.salida = []
+    def ejecutar(self) -> list[int]:
+        """Ejecuta el programa cargado en la computadora."""
+        self._verificar_estado()
         try:
             while True:
-                self.transicion()
+                self._transicion()
         except ComputadoraDetenida:
             pass
-        return self.salida
 
     def __repr__(self) -> str:
         # Recortar el programa ignorando la cola de ceros del final
