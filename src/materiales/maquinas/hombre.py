@@ -20,7 +20,6 @@ ComputadoraDetenida
 import collections
 import enum
 from collections.abc import Iterable, Sequence
-from typing import Self
 
 Memoria = Sequence[int]
 
@@ -129,7 +128,7 @@ class ComputadoraHombrePequenno:
         self.cargar_entrada(entrada)
         self.salida.extend(salida)
 
-    def reiniciar(self) -> Self:
+    def reiniciar(self) -> "ComputadoraHombrePequenno":
         """Reinicia la computadora."""
         self.memoria = [0] * 100
         self.contador = 0
@@ -171,7 +170,7 @@ class ComputadoraHombrePequenno:
                     f"{salida} en la posición {i}."
                 )
 
-    def cargar_programa(self, programa: Memoria) -> Self:
+    def cargar_programa(self, programa: Memoria) -> "ComputadoraHombrePequenno":
         """Carga un programa en la memoria de la computadora.
 
         Parámetros
@@ -191,7 +190,7 @@ class ComputadoraHombrePequenno:
         self.memoria[n_programa:] = [0] * (n_memoria - n_programa)
         return self
 
-    def cargar_entrada(self, entrada: Iterable[int]) -> Self:
+    def cargar_entrada(self, entrada: Iterable[int]) -> "ComputadoraHombrePequenno":
         """Carga una entrada en la computadora.
 
         Parámetros
@@ -202,7 +201,7 @@ class ComputadoraHombrePequenno:
         self.entrada = collections.deque(entrada)
         return self
 
-    def transicion(self, ignorar_detener: bool = True) -> Self:
+    def transicion(self, ignorar_detener: bool = True) -> "ComputadoraHombrePequenno":
         """Realiza un ciclo de instrucción de la computadora.
 
         Un ciclo de instrucción consiste en:
@@ -231,7 +230,7 @@ class ComputadoraHombrePequenno:
         operador, operando = self._decodificar_instruccion(instruccion)
         self._ejecutar_instruccion(operador, operando)
 
-    def detener(self) -> Self:
+    def detener(self) -> "ComputadoraHombrePequenno":
         """Detiene la computadora."""
         self.estado = Estado.DETENIDA
         print("La computadora se detuvo.")
@@ -327,7 +326,7 @@ class ComputadoraHombrePequenno:
         else:
             raise OverflowError()
 
-    def ejecutar(self) -> list[int]:
+    def ejecutar(self) -> None:
         """Ejecuta el programa cargado en la computadora."""
         self._verificar_estado()
         try:
@@ -370,7 +369,7 @@ class ComputadoraHombrePequenno:
             lineas.append(f" {i}X │" + "".join(f"{ind(i)}{mem[i]:03d}" for i in rango))
         return "\n".join(lineas)
 
-    def _repr_html_(self):
+    def _repr_html_(self) -> str:
         def cola(elementos: Iterable[int]) -> str:
             """Crea una cola de elementos HTML."""
             return f"[{', '.join(f'<code>{i:03d}</code>' for i in elementos)}]"
