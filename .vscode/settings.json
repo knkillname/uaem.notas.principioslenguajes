@@ -28,4 +28,5 @@
     "python.terminal.activateEnvironment": true,
     "python.testing.unittestEnabled": true,
     "terminal.integrated.defaultProfile.linux": "bash",
+    "python.formatting.provider": "none",
 }
