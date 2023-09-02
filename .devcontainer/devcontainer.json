@@ -1,10 +1,11 @@
 {
 	"name": "Python 3",
 	"image": "mcr.microsoft.com/devcontainers/python:1-3.10-bookworm",
-	"postCreateCommand": "make",
+	"postCreateCommand": "bash .devcontainer/post-create.sh",
 	"customizations": {
 		"vscode": {
 			"extensions": [
+				"cweijan.vscode-office",
 				"ms-python.black-formatter",
 				"ms-python.isort",
 				"ms-python.mypy-type-checker",
@@ -14,8 +15,9 @@
 				"ms-toolsai.jupyter",
 				"ms-toolsai.vscode-jupyter-cell-tags",
 				"ms-vscode.cpptools-extension-pack",
-				"vscjava.vscode-java-pack",
-				"ms-vscode.makefile-tools"
+				"ms-vscode.hexeditor",
+				"ms-vscode.makefile-tools",
+				"vscjava.vscode-java-pack"
 			]
 		}
 	}
