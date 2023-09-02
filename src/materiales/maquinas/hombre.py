@@ -1,4 +1,4 @@
-"""Computadora del Hombre Pequenno.
+"""Computadora del Hombre Pequeño.
 
 Este módulo contiene la implementación de la computadora del Hombre
 Pequeño, una computadora de arquitectura de Von Neumann con 100
@@ -25,7 +25,7 @@ Memoria = Sequence[int]
 
 
 class Operador(enum.IntEnum):
-    """Instrucciones de la computadora Hombre Pequenno.
+    """Instrucciones de la computadora Hombre Pequeño.
 
     Las instrucciones se componen de tres dígitos, el primero indica la
     operación a realizar y los dos últimos indican la posición de
