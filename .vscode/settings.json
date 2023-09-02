@@ -29,4 +29,9 @@
     "python.testing.unittestEnabled": true,
     "terminal.integrated.defaultProfile.linux": "bash",
     "python.formatting.provider": "none",
+    "vscode-office.previewCode": false,
+    "vscode-office.previewCodeHighlight.style": "github",
+    "workbench.editorAssociations": {
+        "*.md": "default"
+    }
 }
