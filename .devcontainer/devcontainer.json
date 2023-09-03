@@ -1,8 +1,21 @@
 {
-	"name": "Ubuntu",
+	"name": "Debian",
 	"build": {
-		"context": "..",
-		"dockerfile": "../Dockerfile"
+		"context": ".",
+		"dockerfile": "./Dockerfile"
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {
+			"installZsh": "true",
+			"username": "uaem",
+			"userUid": "1000",
+			"userGid": "1000",
+			"upgradePackages": "true"
+		},
+		"ghcr.io/devcontainers/features/git:1": {
+			"version": "os-provided",
+			"ppa": "false"
+		}
 	},
 	"postCreateCommand": "bash .devcontainer/post-create.sh",
 	"customizations": {
@@ -23,5 +36,6 @@
 				"vscjava.vscode-java-pack"
 			]
 		}
-	}
+	},
+	"remoteUser": "uaem"
 }
