@@ -5,7 +5,7 @@ export PIPENV_VENV_IN_PROJECT=1
 default: venv format lint test coverage
 
 venv: .venv/bin/activate
-.venv/bin/activate": Pipfile
+.venv/bin/activate: Pipfile
 	pipenv install --dev
 	pipenv run pip install -e .
 	touch $@
