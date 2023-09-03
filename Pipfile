@@ -13,7 +13,7 @@ scipy = "~=1.11"
 sympy = "~=1.12"
 
 [dev-packages]
-black = "~=23.7"
+black = {version = "~=23.7", extras = ["jupyter"]}
 coverage = "~=7.3"
 isort = "~=5.11"
 mypy = "~=1.5"
