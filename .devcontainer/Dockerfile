@@ -1,3 +1,4 @@
+# Usar Debian Linux 12 (Bookworm) como base para la imagen.
 FROM buildpack-deps:bookworm
 
 # Instalar compiladores e intérpretes de varios lenguajes de programación:
