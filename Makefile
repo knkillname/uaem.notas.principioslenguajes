@@ -1,5 +1,3 @@
-export PIPENV_VENV_IN_PROJECT=1
-
 .PHONY: clean
 
 default: venv format lint test coverage

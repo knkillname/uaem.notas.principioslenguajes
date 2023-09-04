@@ -27,7 +27,6 @@
     "python.terminal.activateEnvInCurrentTerminal": true,
     "python.terminal.activateEnvironment": true,
     "python.testing.unittestEnabled": true,
-    "terminal.integrated.defaultProfile.linux": "bash",
     "python.formatting.provider": "none",
     "vscode-office.previewCode": false,
     "vscode-office.previewCodeHighlight.style": "github",

@@ -6,11 +6,14 @@
 	},
 	"features": {
 		"ghcr.io/devcontainers/features/common-utils:2": {
+			"configureZshAsDefaultShell": "true",
+			"installOhMyZsh": "true",
+			"installOhMyZshConfig": "true",
 			"installZsh": "true",
-			"username": "uaem",
-			"userUid": "1000",
+			"upgradePackages": "true",
 			"userGid": "1000",
-			"upgradePackages": "true"
+			"username": "uaem",
+			"userUid": "1000"
 		},
 		"ghcr.io/devcontainers/features/git:1": {
 			"version": "os-provided",
@@ -36,6 +39,11 @@
 				"vscjava.vscode-java-pack"
 			]
 		}
+	},
+	"remoteEnv": {
+		"LANG": "es_ES.UTF-8",
+		"PIPENV_VENV_IN_PROJECT": "1",
+		"VIRTUAL_ENV_DISABLE_PROMPT": "1"
 	},
 	"remoteUser": "uaem"
 }
