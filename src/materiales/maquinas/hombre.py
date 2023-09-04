@@ -101,6 +101,8 @@ class ComputadoraHombrePequenno:
         Entrada de la computadora.
     salida : deque[int]
         Salida de la computadora.
+    estado : Estado
+        Estado de la computadora.
     """
 
     marcador_pos = "▶"
@@ -336,6 +338,7 @@ class ComputadoraHombrePequenno:
             pass
 
     def __repr__(self) -> str:
+        """Representa la computadora como una cadena de texto."""
         # Recortar el programa ignorando la cola de ceros del final
         programa = self.memoria
         i_final = 0
@@ -353,6 +356,8 @@ class ComputadoraHombrePequenno:
         )
 
     def __str__(self) -> str:
+        """Convierte la computadora en una cadena de texto legible."""
+
         def ind(i: int) -> str:
             if i == self.contador:
                 return "→"
@@ -370,6 +375,8 @@ class ComputadoraHombrePequenno:
         return "\n".join(lineas)
 
     def _repr_html_(self) -> str:
+        """Representa la computadora como una tabla HTML."""
+
         def cola(elementos: Iterable[int]) -> str:
             """Crea una cola de elementos HTML."""
             return f"[{', '.join(f'<code>{i:03d}</code>' for i in elementos)}]"
