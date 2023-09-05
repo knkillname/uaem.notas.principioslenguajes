@@ -64,6 +64,7 @@ class VisorHexadecimal:
         """
         self._n_renglon: int
         self._car_no_imprimible: str
+        self._traductor: dict[int, str]
 
         self.n_renglon = n_renglon
         self.car_no_imprimible = car_no_imprimible
