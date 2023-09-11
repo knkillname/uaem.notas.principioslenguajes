@@ -4,10 +4,11 @@ Autónoma del Estado de Morelos][1].
 
 — *Dr. Mario Abarca*
 
-## Inicio rápido
+## 1. Inicio rápido
 Antes de comenzar se deben de cumplir los siguientes requisitos:
 - Tener instalado [Git][2].
-- Tener instalado [Docker][3].
+- Tener instalado [Docker][3] y por extensión, el [Subsistema de Windows para
+  Linux][7] en el caso de las computadoras con Windows.
 - Tener instalado [Visual Studio Code][4].
 - Tener instalado el plugin de [Dev Containers][5] en Visual Studio Code.
 
@@ -26,7 +27,7 @@ Se debe de aceptar y esperar a que se construya el contenedor.
 Una vez construido el contenedor, se puede acceder a las notas desde el
 directorio *notas*.
 
-## Estructura del repositorio
+## 2. Estructura del repositorio
 El repositorio está estructurado de la siguiente manera:
 - `notas`: Contiene las notas del curso.
   Estas se conforman de cuadernos de Jupyter y algunos recursos didácticos en el
@@ -57,8 +58,6 @@ El repositorio está estructurado de la siguiente manera:
   - `pyproject.toml` contiene la configuración para construir los materiales
     didácticos del directorio `src` con [Hatch][6].
   - `README.md` es este archivo que te encuentras leyendo.
-  
-
 
 [1]: https://www.uaem.mx/
 [2]: https://git-scm.com/
@@ -66,3 +65,4 @@ El repositorio está estructurado de la siguiente manera:
 [4]: https://code.visualstudio.com/
 [5]: https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers
 [6]: https://hatch.pypa.io/
+[7]: https://learn.microsoft.com/es-es/windows/wsl/install
