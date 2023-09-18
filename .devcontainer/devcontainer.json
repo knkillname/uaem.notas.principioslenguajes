@@ -24,7 +24,9 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
+				"bierner.github-markdown-preview",
 				"cweijan.vscode-office",
+				"DavidAnson.vscode-markdownlint",
 				"ms-python.black-formatter",
 				"ms-python.isort",
 				"ms-python.mypy-type-checker",
@@ -36,7 +38,10 @@
 				"ms-vscode.cpptools-extension-pack",
 				"ms-vscode.hexeditor",
 				"ms-vscode.makefile-tools",
-				"vscjava.vscode-java-pack"
+				"shd101wyy.markdown-preview-enhanced",
+				"streetsidesoftware.code-spell-checker",
+				"vscjava.vscode-java-pack",
+				"yzhang.markdown-all-in-one"
 			]
 		}
 	},
