@@ -1,11 +1,14 @@
 # uaem.notas.principioslenguajes
+
 Notas de curso Principios de Lenguajes de Programación de la [Universidad
 Autónoma del Estado de Morelos][1].
 
 — *Dr. Mario Abarca*
 
 ## 1. Inicio rápido
+
 Antes de comenzar se deben de cumplir los siguientes requisitos:
+
 - Tener instalado [Git][2].
 - Tener instalado [Docker][3] y por extensión, el [Subsistema de Windows para
   Linux][7] en el caso de las computadoras con Windows.
@@ -28,7 +31,9 @@ Una vez construido el contenedor, se puede acceder a las notas desde el
 directorio *notas*.
 
 ## 2. Estructura del repositorio
+
 El repositorio está estructurado de la siguiente manera:
+
 - `notas`: Contiene las notas del curso.
   Estas se conforman de cuadernos de Jupyter y algunos recursos didácticos en el
   subdirectorio `recursos`.
@@ -58,6 +63,38 @@ El repositorio está estructurado de la siguiente manera:
   - `pyproject.toml` contiene la configuración para construir los materiales
     didácticos del directorio `src` con [Hatch][6].
   - `README.md` es este archivo que te encuentras leyendo.
+
+## 3. Preguntas frecuentes
+
+### No le entiendo a sus símbolos matemáticos. ¿Qué hago?
+
+La notación matemática es estándar en el área de matemáticas y las ciencias de
+la computación, si necesitas ayuda con ella te recomiendo la siguiente
+referencia:
+
+- Johnsonbaugh, R. (2005). El lenguaje de las matemáticas.
+  En *Matemáticas discretas*. Pearson Educación.
+
+### ¿Qué es Docker y por qué necesito instalarlo?
+
+Docker es una herramienta que permite crear contenedores de software.
+Los contenedores de software te permiten ejecutar software en un entorno
+aislado, de manera que no se afecte el resto del sistema.
+En este caso, el contenedor de Docker que se utiliza en este repositorio
+contiene todas las herramientas necesarias para ejecutar los cuadernos de
+Jupyter así como para realizar las prácticas del curso.
+Si eligieras no usar Docker, tendrías que instalar todas las herramientas
+necesarias directamente en tu computadora, lo cual puede ser muy complicado.
+
+### ¿Por qué el contenedor está basado en Linux?
+
+El contenedor está basado en Linux porque es el sistema operativo más utilizado
+en el área de las ciencias de la computación, tiene un gran soporte para
+herramientas de desarrollo, y es de código abierto.
+
+### ¿Me puede aprobar el curso si solamente me quiero dedicar a hacer teoría?
+
+Respuesta corta: No. Respuesta larga: Noooooooooooooooooooooooooooooooooooooo.
 
 [1]: https://www.uaem.mx/
 [2]: https://git-scm.com/
