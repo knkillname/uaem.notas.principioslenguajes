@@ -17,6 +17,8 @@ black = {version = "~=23.7", extras = ["jupyter"]}
 coverage = "~=7.3"
 isort = "~=5.11"
 mypy = "~=1.5"
+nbconvert = "~=7.8"
+notebook = "~=7.0"
 pylint = "~= 2.17"
 rope = "~=1.9"
 

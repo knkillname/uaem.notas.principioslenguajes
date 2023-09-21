@@ -1,4 +1,7 @@
 .PHONY: clean
+NOTAS_IPYNB=$(wildcard notas/*.ipynb)
+DIR_HTML=dist/html
+NOTAS_HTML=$(patsubst notas/%.ipynb, $(DIR_HTML)/%.html, $(NOTAS_IPYNB))
 
 default: venv format lint test coverage
 
@@ -7,6 +10,11 @@ venv: .venv/bin/activate
 	pipenv install --dev
 	pipenv run pip install -e .
 	touch $@
+
+html: $(NOTAS_HTML)
+$(DIR_HTML)/%.html: notas/%.ipynb
+	mkdir -p notas/html
+	pipenv run jupyter nbconvert --to html --execute --output-dir $(DIR_HTML) $<
 
 format: venv
 	pipenv run isort .
