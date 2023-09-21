@@ -66,6 +66,31 @@ El repositorio está estructurado de la siguiente manera:
 
 ## 3. Preguntas frecuentes
 
+### ¿Qué es un cuaderno de Jupyter?
+
+Los cuadernos de Jupyter son documentos interactivos que permiten combinar
+código, texto, imágenes, y otros elementos en un solo lugar.
+Puedes pensar en ellos como documentos de Word que te permiten ejecutar código e
+interactuar con él.
+Los materiales del curso están escritos en cuadernos de Jupyter porque permiten
+combinar la teoría con la práctica de una manera muy sencilla.
+
+### ¿Qué es un repositorio de GitHub y cómo lo utilizo?
+
+Un repositorio de GitHub es un lugar donde se almacenan archivos de código
+fuente y otros recursos de un proyecto.
+GitHub funciona con un sistema de control de versiones llamado *Git*.
+Este lleva un registro de los cambios que se hacen a los archivos (qué, cuándo,
+y quién), de manera que cuando se comete un error se puede regresar a una
+versión anterior.
+
+Para utilizarlo, se debe de instalar Git y clonar el repositorio.
+En los párrafos anteriores se explica cómo hacerlo mediante Visual Studio Code.
+Solo asegúrate de descargar los cambios más recientes de vez en cuando
+utilizando el ícono de *sincronizar* 🗘 en la barra de estado de Visual Studio
+Code, o bien, escribiendo el comando `git pull` en la terminal.
+
+
 ### No le entiendo a sus símbolos matemáticos. ¿Qué hago?
 
 La notación matemática es estándar en el área de matemáticas y las ciencias de
