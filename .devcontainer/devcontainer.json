@@ -43,7 +43,10 @@
 				"streetsidesoftware.code-spell-checker",
 				"vscjava.vscode-java-pack",
 				"yzhang.markdown-all-in-one"
-			]
+			],
+			"settings": {
+				"git.autofetch": true
+			}
 		}
 	},
 	"remoteEnv": {
