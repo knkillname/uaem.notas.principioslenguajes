@@ -113,9 +113,9 @@ class Gramatica:
         producciones = self._recolectar()
         renglones = []
         for izq, derechas in producciones.items():
-            izq = _a_markdown(izq)
+            izq_str = _a_markdown(izq)
             der = " | ".join(" ".join(map(_a_markdown, der)) for der in derechas)
-            renglones.append(f"- {izq} ::= {der}")
+            renglones.append(f"- {izq_str} ::= {der}")
         return "\n".join(renglones)
 
     def _recolectar(self) -> dict[NoTerminal, Sequence[Simbolo]]:
