@@ -1,119 +1,138 @@
-from collections.abc import Collection, Mapping, Sequence
+from collections import UserString
+from collections.abc import Sequence
+from typing import NamedTuple
 
 
-class GramaticaLibreDeContexto:
-    def __init__(
-        self,
-        no_terminales: str,
-        terminales: str,
-        producciones: Sequence[tuple[str, str]],
-        inicial: str,
-    ):
-        self.no_terminales: Collection[str] = frozenset(no_terminales)
-        self.terminales: Collection[str] = frozenset(terminales)
-        self.producciones: Sequence[tuple[str, str]] = list(dict(producciones).items())
-        self.inicial: str = inicial
+class NoTerminal(UserString):
+    """Representa un símbolo no terminal de una gramática.
 
-    def usar_regla(self, n_produccion: int, cadena: str) -> str:
-        """
-        Reemplazar un no terminal en una cadena mediante una producción.
+    Un símbolo no terminal es un símbolo que puede ser reemplazado por
+    una sucesión de símbolos terminales y no terminales.
 
-        Parámetros
-        ----------
-        n_produccion : int
-            Índice de la producción a aplicar.
-        cadena : str
-            Cadena en la que se reemplazará el no terminal.
-
-        Regresa
-        -------
-        str
-            Cadena con el no terminal reemplazado por la producción.
-        """
-        no_terminal, produccion = self.producciones[n_produccion]
-        return cadena.replace(no_terminal, produccion, 1)
-
-    def es_terminal(self, simbolo: str) -> bool:
-        """
-        Verificar si un símbolo es terminal.
-
-        Parámetros
-        ----------
-        simbolo : str
-            Símbolo a verificar.
-
-        Regresa
-        -------
-        bool
-            `True` si el símbolo es terminal, `False` en otro caso.
-        """
-        return simbolo in self.terminales
-
-    def es_no_terminal(self, simbolo: str) -> bool:
-        """
-        Verificar si un símbolo es no terminal.
-
-        Parámetros
-        ----------
-        simbolo : str
-            Símbolo a verificar.
-
-        Regresa
-        -------
-        bool
-            `True` si el símbolo es no terminal, `False` en otro caso.
-        """
-        return simbolo in self.no_terminales
-
-    def contiene_no_terminales(self, cadena: str) -> bool:
-        """
-        Verificar si una cadena contiene no terminales.
-
-        Parámetros
-        ----------
-        cadena : str
-            Cadena a verificar.
-
-        Regresa
-        -------
-        bool
-            `True` si la cadena contiene no terminales, `False` en
-            caso contrario.
-        """
-        return any(no_terminal in cadena for no_terminal in self.no_terminales)
-
-    # Métodos mágicos
-    def __str__(self) -> str:
-        """Convierte la gramática a una cadena de caracteres."""
-        nt_ = f"{{{', '.join(self.no_terminales)}}}"
-        ter = f"{{{', '.join(self.terminales)}}}"
-        aux_p = (
-            f"{no_terminal} → {produccion}"
-            for no_terminal, produccion in self.producciones.items()
-        )
-        pro = f"{{{', '.join(aux_p)}}}"
-        return f"(N={nt_}, T={ter}, P={pro}, S={self.inicial})"
+    Atributos
+    ---------
+    data : str
+        El nombre del símbolo no terminal.
+    """
 
     def __repr__(self) -> str:
-        """Representa la gramática como una cadena de caracteres."""
-        clase = type(self).__name__
-        return (
-            f"{clase}({list(self.no_terminales)}, {list(self.terminales)}, "
-            f"{dict(self.producciones)}, {self.inicial})"
-        )
+        return f"NoTerminal({self.data!r})"
+
+    def __str__(self) -> str:
+        """Devuelve la representación BNF del símbolo no terminal."""
+        return f"<{self.data}>"
 
     def _repr_markdown_(self) -> str:
-        """Representa la gramática como en Markdown."""
-        renglones = ["$G = (N, T, P, S)$, donde:"]
-        nt_ = ", ".join(self.no_terminales)
-        renglones.append(f"* $N = {{{nt_}}}$")
-        ter = ", ".join(self.terminales)
-        renglones.append(f"* $T = {{{ter}}}$")
+        """Devuelve la representación BNF del símbolo no terminal."""
+        return f"<**{self.data}**>"
 
-        renglones.append("* $P$ es un conjunto con los siguientes elementos:")
-        renglones.append("$$\\begin{align}")
-        for terminal, produccion in self.producciones.items():
-            renglones.append(f"  {terminal} &\\to {produccion} \\\\")
-        renglones.append("\\end{align}$$")
 
-        renglones.append(f"* $S = {self.inicial}$")
+Simbolo = NoTerminal | str
+
+
+def _a_markdown(obj: Simbolo) -> str:
+    """Devuelve la representación Markdown de un símbolo.
+
+    Si el símbolo es un `NoTerminal`, se devuelve su representación
+    Markdown. Si no, se devuelve la representación `str` del símbolo.
+
+    Parámetros
+    ----------
+    obj
+        El símbolo a representar.
+
+    Devuelve
+    --------
+    str
+        La representación Markdown del símbolo.
+    """
+    # pylint: disable=protected-access
+    try:
+        return obj._repr_markdown_()
+    except AttributeError:
+        contenido = str(obj)
+        if contenido:
+            return f"“`{contenido}`”"
+        return r"$\varepsilon$"
+
+
+class Produccion(NamedTuple):
+    """Representa una producción de una gramática.
+
+    Una producción es una regla que indica cómo se puede reemplazar un
+    símbolo no terminal por una sucesión de símbolos terminales y no
+    terminales.
+
+    Atributos
+    ---------
+    izq : NoTerminal
+        El símbolo no terminal que se reemplaza.
+    der : Sequence[Simbolo]
+        La sucesión de símbolos terminales y no terminales por la que
+        se reemplaza el símbolo no terminal.
+    """
+
+    izq: NoTerminal
+    der: Sequence[Simbolo]
+
+    def __str__(self) -> str:
+        return f'{self.izq} ::= {" ".join(str(sim) for sim in self.der)}'
+
+    def __repr__(self) -> str:
+        return f"Produccion({self.izq!r}, {self.der!r})"
+
+    def _repr_markdown_(self) -> str:
+        # pylint: disable=protected-access
+        return (
+            f"{_a_markdown(self.izq)} ::= "
+            f'{" ".join(_a_markdown(sim) for sim in self.der)}'
+        )
+
+
+class Gramatica:
+    """Representa una gramática.
+
+    Una gramática es un conjunto de producciones.
+
+    Atributos
+    ---------
+    producciones : list[Produccion]
+        Las producciones de la gramática.
+    """
+
+    def __init__(self, producciones: Sequence[Produccion]) -> None:
+        self.producciones = list(producciones)
+
+    def __str__(self) -> str:
+        return "\n".join(str(p) for p in self.producciones)
+
+    def __repr__(self) -> str:
+        return f"Gramatica({self.producciones!r})"
+
+    def _repr_markdown_(self) -> str:
+        producciones = self._recolectar()
+        renglones = []
+        for izq, derechas in producciones.items():
+            izq = _a_markdown(izq)
+            der = " | ".join(" ".join(map(_a_markdown, der)) for der in derechas)
+            renglones.append(f"- {izq} ::= {der}")
+        return "\n".join(renglones)
+
+    def _recolectar(self) -> dict[NoTerminal, Sequence[Simbolo]]:
+        """Recolecta las producciones de la gramática.
+
+        Este método devuelve un diccionario que asocia cada símbolo no
+        terminal de la gramática con una lista de sucesiones de
+        símbolos terminales y no terminales, como en la notación BNF.
+
+        Devuelve
+        --------
+        dict[NoTerminal, Sequence[Simbolo]]
+            El diccionario que asocia cada símbolo no terminal con una
+            lista de sucesiones de símbolos terminales y no terminales.
+        """
+        resultado = {}
+        for izq, der in self.producciones:
+            recolectadas = resultado.setdefault(izq, [])
+            recolectadas.append(der)
+        return resultado
