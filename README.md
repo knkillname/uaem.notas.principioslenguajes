@@ -10,8 +10,8 @@ Autónoma del Estado de Morelos][1].
 Antes de comenzar se deben de cumplir los siguientes requisitos:
 
 - Tener instalado [Git][2].
-- Tener instalado [Docker][3] y por extensión, el [Subsistema de Windows para
-  Linux][7] en el caso de las computadoras con Windows.
+- Tener instalado el motor de [Docker][3]; en las computadoras con Windows se
+  requiere instalar previamente el [Subsistema de Windows para Linux][7].
 - Tener instalado [Visual Studio Code][4].
 - Tener instalado el plugin de [Dev Containers][5] en Visual Studio Code.
 
@@ -68,12 +68,19 @@ El repositorio está estructurado de la siguiente manera:
 
 ### ¿Qué es un cuaderno de Jupyter?
 
-Los cuadernos de Jupyter son documentos interactivos que permiten combinar
+Los cuadernos de [Jupyter][8] son documentos interactivos que permiten combinar
 código, texto, imágenes, y otros elementos en un solo lugar.
 Puedes pensar en ellos como documentos de Word que te permiten ejecutar código e
 interactuar con él.
 Los materiales del curso están escritos en cuadernos de Jupyter porque permiten
 combinar la teoría con la práctica de una manera muy sencilla.
+
+Jupyter usa un sistema de celdas para organizar el contenido de los cuadernos;
+algunas son celdas de código (generalmente Python), otras son celdas de texto
+en formato [Markdown][9].
+Asimismo, el texto puede contener ecuaciones escritas en $\LaTeX$, como se
+describe en el capítulo 3 de [La introducción no-tan-corta a$\LaTeX\,
+2_\varepsilon$][10].
 
 ### ¿Qué es un repositorio de GitHub y cómo lo utilizo?
 
@@ -128,3 +135,6 @@ Respuesta corta: No. Respuesta larga: Noooooooooooooooooooooooooooooooooooooo.
 [5]: https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers
 [6]: https://hatch.pypa.io/
 [7]: https://learn.microsoft.com/es-es/windows/wsl/install
+[8]: https://jupyter.org/
+[9]: https://markdown.es/sintaxis-markdown/
+[10]: http://mirrors.ctan.org/info/lshort/spanish/lshort-letter.pdf
