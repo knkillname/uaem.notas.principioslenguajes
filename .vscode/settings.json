@@ -13,6 +13,14 @@
         "editor.defaultFormatter": "ms-python.black-formatter",
     },
     "black-formatter.importStrategy": "useBundled",
+    "cSpell.language": "en,es",
+    "cSpell.words": [
+        "Gramatica",
+        "Produccion",
+        "Simbolo",
+        "tokenizar",
+        "varepsilon"
+    ],
     "editor.formatOnSave": true,
     "editor.rulers": [
         80

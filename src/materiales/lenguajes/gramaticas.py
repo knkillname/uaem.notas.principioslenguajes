@@ -1,4 +1,4 @@
-from collections import UserString
+from collections import UserString, defaultdict
 from collections.abc import Sequence
 from typing import NamedTuple
 
@@ -131,8 +131,7 @@ class Gramatica:
             El diccionario que asocia cada símbolo no terminal con una
             lista de sucesiones de símbolos terminales y no terminales.
         """
-        resultado = {}
+        resultado: defaultdict[NoTerminal, Sequence[Simbolo]] = defaultdict(list)
         for izq, der in self.producciones:
-            recolectadas = resultado.setdefault(izq, [])
-            recolectadas.append(der)
+            resultado[izq].append(der)
         return resultado
