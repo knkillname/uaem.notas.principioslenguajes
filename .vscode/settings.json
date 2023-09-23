@@ -15,9 +15,17 @@
     "black-formatter.importStrategy": "useBundled",
     "cSpell.language": "en,es",
     "cSpell.words": [
+        "Derivacion",
+        "ésimo",
         "gramatica",
         "Gramatica",
+        "gramaticas",
+        "imprimibles",
+        "itacate",
+        "jitomate",
+        "opcion",
         "Produccion",
+        "shortlex",
         "Simbolo",
         "tokenizar",
         "varepsilon"

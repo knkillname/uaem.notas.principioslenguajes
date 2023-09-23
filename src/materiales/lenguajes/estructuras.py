@@ -2,7 +2,7 @@
 import abc
 import collections
 from collections.abc import Mapping, Sequence
-from typing import NamedTuple
+from typing import NamedTuple, NotRequired, TypedDict
 
 
 class Simbolo(collections.UserString, metaclass=abc.ABCMeta):
@@ -80,6 +80,14 @@ class Produccion(NamedTuple):
             rf"{self.izquierda._repr_markdown_()} $\to$ "
             f"{''.join(s._repr_markdown_() for s in self.derecha)}"
         )
+
+
+class DerivacionDict(TypedDict):
+    """Representa una derivación de una gramática."""
+
+    cadena: NotRequired[Cadena]
+    n_produccion: int
+    n_salto: NotRequired[int]
 
 
 class MultiProduccion(NamedTuple):

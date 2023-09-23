@@ -6,11 +6,11 @@ from .. import notacion
 from . import bnf
 from .estructuras import (
     Cadena,
+    DerivacionDict,
     GramaticaLibreContextoMap,
     MultiProduccion,
     NoTerminal,
     Produccion,
-    TCadena,
     Terminal,
 )
 
@@ -62,36 +62,72 @@ class GramaticaLibreContexto:
         return notacion.Conjunto(resultado)
 
     @property
-    def producciones(self) -> Collection[Produccion]:
-        """Devuelve las producciones de la gramática."""
-        resultado = set()
+    def producciones(self) -> Sequence[Produccion]:
+        """Devuelve las reglas de producción de la gramática."""
+        resultado = []
         for izq, der in self._datos.items():
             for cadena in der:
-                resultado.add(Produccion(izq, tuple(cadena)))
-        return notacion.Conjunto(resultado)
+                resultado.append(Produccion(izq, tuple(cadena)))
+        return notacion.Sucesion(resultado)
 
     @property
     def simbolo_inicial(self) -> NoTerminal:
         """Devuelve el símbolo inicial de la gramática."""
         return next(iter(self._datos.keys()))
 
-    def reemplazos(self, simbolo: NoTerminal) -> Sequence[TCadena]:
-        """
-        Devuelve los reemplazos disponibles para un símbolo no terminal.
+    def aplicar(self, n_produccion: int, cadena: Cadena, n_salto: int = 0) -> Cadena:
+        """Aplica una producción de la gramática a una cadena.
 
         Parámetros
         ----------
-        simbolo : NoTerminal
-            El símbolo no terminal que se desea reemplazar.
+        n_produccion : int
+            El número de la producción a aplicar.
+        cadena : Cadena
+            La cadena a la que se le aplicará la producción.
+        n_salto : int, opcional
+            El número de veces que se omitirá la aplicación de la
+            producción de izquierda a derecha.
+            Por defecto es 0, lo que significa que se aplicará la
+            producción al símbolo no terminal más a la izquierda.
 
         Devuelve
         --------
-        Sequence[Cadena]
-            Una sucesión de cadenas de símbolos terminales y no
-            terminales.
+        Cadena
+            La cadena resultante de aplicar la producción.
         """
-        resultados = [Cadena(r) for r in self._datos.get(simbolo, ())]
-        return notacion.Sucesion(resultados)
+        izq, der = self.producciones[n_produccion]
+
+        # Obtenemos los índices de los símbolos no terminales a los que
+        # se les puede aplicar la producción.
+        indices = [i for (i, simbolo) in enumerate(cadena) if simbolo == izq]
+
+        # Aplicamos la producción al (n_salto)-ésimo símbolo no terminal
+        # que coincida con el símbolo izquierdo de la producción.
+        if n_salto < len(indices):
+            indice = indices[n_salto]
+            return cadena[:indice] + der + cadena[indice + 1 :]
+        return cadena
+
+    def reglas_aplicables(self, cadena: Cadena) -> Sequence[DerivacionDict]:
+        """Devuelve las reglas de producción aplicables a una cadena.
+
+        Parámetros
+        ----------
+        cadena : Cadena
+            La cadena a la que se le aplicarán las reglas de producción.
+
+        Devuelve
+        --------
+        Sequence[DerivacionDict]
+            Las reglas de producción aplicables a la cadena.
+        """
+        resultado = []
+        for n_produccion, (izq, _) in enumerate(self.producciones):
+            indices = [i for (i, simbolo) in enumerate(cadena) if simbolo == izq]
+            resultado.append({"n_produccion": n_produccion})
+            for n_salto in range(1, len(indices)):
+                resultado.append({"n_produccion": n_produccion, "n_salto": n_salto})
+        return resultado
 
     def __repr__(self) -> str:
         """Devuelve una representación de la gramática."""
