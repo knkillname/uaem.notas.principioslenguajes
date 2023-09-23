@@ -15,6 +15,7 @@
     "black-formatter.importStrategy": "useBundled",
     "cSpell.language": "en,es",
     "cSpell.words": [
+        "gramatica",
         "Gramatica",
         "Produccion",
         "Simbolo",
