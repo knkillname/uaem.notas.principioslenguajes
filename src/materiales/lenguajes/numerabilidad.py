@@ -1,3 +1,4 @@
+"""Módulo para trabajar con lenguajes numerables."""
 import functools
 from typing import Iterator
 
@@ -20,11 +21,11 @@ def cmp_shortlex(cadena_1: str, cadena_2: str) -> int:
         1 si cadena_1 va después que cadena_2.
     """
     if cadena_1 == cadena_2:
-        return 0  # cadena_1 es igual a cadena_2
+        return 0
     if len(cadena_1) < len(cadena_2):
-        return -1  # cadena_1 va antes que cadena_2
-    elif len(cadena_1) > len(cadena_2):
-        return 1  # cadena_1 va después que cadena_2
+        return -1
+    if len(cadena_1) > len(cadena_2):
+        return 1
 
     assert len(cadena_1) == len(cadena_2) and cadena_1 != cadena_2
     return -1 if cadena_1 < cadena_2 else 1  # Usamos orden lexicográfico
