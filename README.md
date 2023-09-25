@@ -81,8 +81,8 @@ Jupyter usa un sistema de celdas para organizar el contenido de los cuadernos;
 algunas son celdas de código (generalmente Python), otras son celdas de texto
 en formato [Markdown][9].
 Asimismo, el texto puede contener ecuaciones escritas en $\LaTeX$, como se
-describe en el capítulo 3 de [La introducción no-tan-corta a$\LaTeX\,
-2_\varepsilon$][10].
+describe en el capítulo 3 de [La introducción no-tan-corta a
+$\LaTeX\,2_\varepsilon$][10].
 
 ### ¿Qué es un repositorio de GitHub y cómo lo utilizo?
 
