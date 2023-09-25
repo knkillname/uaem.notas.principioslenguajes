@@ -10,6 +10,17 @@ from ..notacion import obtener_latex as _latex
 class Simbolo(collections.UserString, metaclass=abc.ABCMeta):
     """Representa un símbolo de una gramática."""
 
+    def __eq__(self, string: object) -> bool:
+        if not isinstance(string, self.__class__):
+            return False
+        return super().__eq__(string)
+
+    def __ne__(self, __value: object) -> bool:
+        return not self == __value
+
+    def __hash__(self) -> int:
+        return hash((self.__class__, self.data))
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.data!r})"
 
@@ -116,10 +127,7 @@ class Produccion(NamedTuple):
 
     def _repr_markdown_(self) -> str:
         # pylint: disable=protected-access
-        return (
-            rf"{self.izquierda._repr_markdown_()} $\to$ "
-            rf"{self.derecha._repr_markdown_()}"
-        )
+        return self._repr_latex_()
 
     def _repr_latex_(self) -> str:
         # pylint: disable=protected-access
