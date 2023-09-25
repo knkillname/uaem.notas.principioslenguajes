@@ -2,7 +2,7 @@
 import unittest
 
 from materiales.lenguajes.bnf import ParserBNFLibreContexto, Token
-from materiales.lenguajes.estructuras import NoTerminal, Terminal
+from materiales.lenguajes.estructuras import Terminal, Variable
 
 
 class TestParserBNFLibreContexto(unittest.TestCase):
@@ -64,9 +64,9 @@ class TestParserBNFLibreContexto(unittest.TestCase):
 
         """
         salida = {
-            NoTerminal("S"): [(NoTerminal("A"),), (NoTerminal("B"),)],
-            NoTerminal("A"): [(Terminal("a"), NoTerminal("A")), (Terminal("a"),)],
-            NoTerminal("B"): [(Terminal("b"), NoTerminal("B")), (Terminal(""),)],
+            Variable("S"): ((Variable("A"),), (Variable("B"),)),
+            Variable("A"): ((Terminal("a"), Variable("A")), (Terminal("a"),)),
+            Variable("B"): ((Terminal("b"), Variable("B")), ()),
         }
         resultado = ParserBNFLibreContexto().diseccionar(entrada)
         self.assertEqual(resultado, salida)

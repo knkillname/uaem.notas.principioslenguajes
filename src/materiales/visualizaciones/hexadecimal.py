@@ -4,6 +4,8 @@ Este módulo contiene la clase `VisorHexadecimal`, que permite
 visualizar bytes en formato hexadecimal.
 """
 import string
+from collections.abc import Callable
+from typing import cast
 
 
 def _generar_traductor(car_no_imprimible: str) -> dict[int, str]:
@@ -133,4 +135,5 @@ class VisorHexadecimal:
         return resultado
 
     def _formatear_str(self, renglon: bytes) -> str:
-        return " ".join(map(self._traductor.get, renglon))
+        mapeo = cast(Callable[[int], str], self._traductor.get)
+        return " ".join(map(mapeo, renglon))

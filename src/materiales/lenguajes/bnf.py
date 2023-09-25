@@ -10,12 +10,14 @@ from collections import deque
 from typing import Iterator, NamedTuple
 
 from .estructuras import (
+    Cadena,
     GramaticaLibreContextoDict,
+    GramaticaLibreContextoMap,
     MultiProduccion,
-    NoTerminal,
     Simbolo,
-    TCadena,
     Terminal,
+    UnionCadenas,
+    Variable,
 )
 
 
@@ -44,7 +46,7 @@ class ParserBNFLibreContexto:
     """Analizador sintáctico para gramáticas en notación BNF."""
 
     spec_tokens = {
-        "NO_TERMINAL": r"<\w+?>",  # Los no terminales están entre corchetes angulares
+        "NO_TERMINAL": r"<[\w\-\.]+?>",  # No terminales van entre corchetes angulares
         "TERMINAL": r'"(\\.|[^"\\])*"',  # Los terminales están entre comillas dobles
         "UNION": r"\|",  # La unión es el símbolo |
         "PRODUCCION": r"::=",  # La producción se simboliza con ::=
@@ -78,7 +80,7 @@ class ParserBNFLibreContexto:
                     )
             yield Token(tipo, valor, linea, columna)
 
-    def _consumir_no_terminal(self, tokens: deque[Token]) -> NoTerminal:
+    def _consumir_no_terminal(self, tokens: deque[Token]) -> Variable:
         """Consume un símbolo no terminal."""
         token = tokens.popleft()
         if token.tipo != "NO_TERMINAL":
@@ -86,7 +88,7 @@ class ParserBNFLibreContexto:
                 "Se esperaba un símbolo no terminal en línea "
                 f"{token.linea}, columna {token.columna}"
             )
-        return NoTerminal(token.valor[1:-1])
+        return Variable(token.valor[1:-1])
 
     def _consumir_signo_de_produccion(self, tokens: deque[Token]) -> None:
         """Consume el signo de producción de una producción."""
@@ -104,15 +106,15 @@ class ParserBNFLibreContexto:
             case "TERMINAL":
                 return Terminal(json.loads(token.valor))
             case "NO_TERMINAL":
-                return NoTerminal(token.valor[1:-1])
+                return Variable(token.valor[1:-1])
         raise SyntaxError(
             "Se esperaba un símbolo terminal o no terminal en línea "
             f"{token.linea}, columna {token.columna}"
         )
 
-    def _consumir_cadena(self, tokens: deque[Token]) -> TCadena:
+    def _consumir_cadena(self, tokens: deque[Token]) -> Cadena:
         """Consume una cadena de símbolos terminales y no terminales."""
-        cadena: list[str] = []
+        cadena: list[Simbolo] = []
         assert tokens
         if tokens[0].tipo not in ("TERMINAL", "NO_TERMINAL"):
             raise SyntaxError(
@@ -121,7 +123,7 @@ class ParserBNFLibreContexto:
             )
         while tokens and tokens[0].tipo in ("TERMINAL", "NO_TERMINAL"):
             cadena.append(self._consumir_simbolo(tokens))
-        return tuple(cadena)
+        return Cadena(cadena)
 
     def _consumir_fin_de_linea(self, tokens: deque[Token]) -> bool:
         """Consume un salto de línea."""
@@ -135,14 +137,14 @@ class ParserBNFLibreContexto:
                 break
         return consumido
 
-    def _consumir_derecha(self, tokens: deque[Token]) -> list[TCadena]:
+    def _consumir_derecha(self, tokens: deque[Token]) -> UnionCadenas:
         """Consume la parte derecha de una producción."""
-        derecha: list[list[str]] = []
+        derecha: list[Cadena] = []
         derecha.append(self._consumir_cadena(tokens))
         while tokens and tokens[0].tipo == "UNION":
             tokens.popleft()
             derecha.append(self._consumir_cadena(tokens))
-        return derecha
+        return UnionCadenas(derecha)
 
     def _consumir_produccion(self, tokens: deque[Token]) -> MultiProduccion:
         """Consume una producción."""
@@ -151,7 +153,7 @@ class ParserBNFLibreContexto:
         der = self._consumir_derecha(tokens)
         return MultiProduccion(izq, der)
 
-    def _consumir_gramatica(self, tokens: deque[Token]) -> GramaticaLibreContextoDict:
+    def _consumir_gramatica(self, tokens: deque[Token]) -> GramaticaLibreContextoMap:
         """Consume una gramática."""
         gramatica: GramaticaLibreContextoDict = {}
         self._consumir_fin_de_linea(tokens)
@@ -159,9 +161,10 @@ class ParserBNFLibreContexto:
             izq, der = self._consumir_produccion(tokens)
             gramatica.setdefault(izq, []).extend(der)
             self._consumir_fin_de_linea(tokens)
-        return gramatica
+        resultado = {izq: UnionCadenas(der) for izq, der in gramatica.items() if der}
+        return resultado
 
-    def diseccionar(self, texto: str) -> GramaticaLibreContextoDict:
+    def diseccionar(self, texto: str) -> GramaticaLibreContextoMap:
         """
         Convierte un texto en BNF a una estructura de gramática.
 
