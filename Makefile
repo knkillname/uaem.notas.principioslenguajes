@@ -24,6 +24,7 @@ lint: venv
 	pipenv run isort --check src notas
 	pipenv run black --check src notas
 	pipenv run pylint src notas
+	pipenv run mypy src notas
 
 test: venv
 	pipenv run python -m unittest discover -s tests

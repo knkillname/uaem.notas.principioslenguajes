@@ -1,10 +1,12 @@
 """Módulo para la notación de objetos matemáticos."""
 
+from collections.abc import Hashable
+from typing import Any, TypeVar
 
-from typing import Any
+T = TypeVar("T", bound=Hashable)
 
 
-class Conjunto(frozenset):
+class Conjunto(frozenset[T]):
     """Representa un conjunto de elementos."""
 
     def _repr_markdown_(self) -> str:
@@ -12,7 +14,7 @@ class Conjunto(frozenset):
         elementos = []
         for elemento in self:
             try:
-                elementos.append(elemento._repr_markdown_())
+                elementos.append(elemento._repr_markdown_())  # type: ignore
             except AttributeError:
                 elementos.append(str(elemento))
         elementos.sort()
@@ -20,7 +22,7 @@ class Conjunto(frozenset):
         return f"{{{interior}}}"
 
 
-class Sucesion(tuple):
+class Sucesion(tuple[Any, ...]):
     """Representa una sucesión de elementos."""
 
     def _repr_markdown_(self) -> str:

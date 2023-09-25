@@ -1,31 +1,48 @@
 """Estructuras de datos para representar gramáticas libres de contexto."""
 import abc
-import collections
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Hashable, Iterable, Mapping, Sequence
+from functools import total_ordering
 from typing import NamedTuple, NotRequired, Self, TypedDict
 
 from ..notacion import obtener_latex as _latex
 
 
-class Simbolo(collections.UserString, metaclass=abc.ABCMeta):
+@total_ordering
+class Simbolo(Hashable, metaclass=abc.ABCMeta):
     """Representa un símbolo de una gramática."""
+
+    def __init__(self, valor: str) -> None:
+        self._valor = valor
+
+    @property
+    def valor(self) -> str:
+        """Devuelve los datos del símbolo."""
+        return self._valor
+
+    def __bool__(self) -> bool:
+        return bool(self._valor)
+
+    def __lt__(self, string: object) -> bool:
+        if not isinstance(string, self.__class__):
+            return NotImplemented
+        return self._valor < string._valor
 
     def __eq__(self, string: object) -> bool:
         if not isinstance(string, self.__class__):
             return False
-        return super().__eq__(string)
+        return self._valor == string._valor
 
     def __ne__(self, __value: object) -> bool:
         return not self == __value
 
     def __hash__(self) -> int:
-        return hash((self.__class__, self.data))
+        return hash((self.__class__, self._valor))
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({self.data!r})"
+        return f"{self.__class__.__name__}({self._valor!r})"
 
     def __str__(self) -> str:
-        return self.data
+        return self._valor
 
     @abc.abstractmethod
     def _repr_markdown_(self) -> str:
@@ -40,32 +57,32 @@ class Variable(Simbolo):
     """Representa una variable."""
 
     def __str__(self) -> str:
-        return f"<{self.data}>"
+        return f"<{self._valor}>"
 
     def _repr_markdown_(self) -> str:
-        return f"***{self.data}***"
+        return f"***{self._valor}***"
 
     def _repr_latex_(self) -> str:
-        return rf"${{{self.data}}}$"
+        return rf"${{{self._valor}}}$"
 
 
 class Terminal(Simbolo):
     """Representa un símbolo terminal."""
 
     def __str__(self) -> str:
-        if self.data == "":
+        if not self:
             return "ε"
-        return f'"{self.data}"'
+        return f'"{self._valor}"'
 
     def _repr_markdown_(self) -> str:
-        if self.data == "":
+        if not self:
             return r"${{\varepsilon}}$"
-        return f"`{self.data}`"
+        return f"`{self._valor}`"
 
     def _repr_latex_(self) -> str:
-        if self.data == "":
+        if not self:
             return r"$\varepsilon$"
-        return rf"$\texttt{{{self.data}}}$"
+        return rf"$\texttt{{{self._valor}}}$"
 
 
 TCadena = Sequence[Simbolo]

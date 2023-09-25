@@ -6,7 +6,7 @@ from collections.abc import Collection, Iterator, Mapping, Sequence
 from functools import cached_property
 from typing import NamedTuple, Self
 
-import pygraphviz
+import pygraphviz  # type: ignore
 
 from .. import notacion
 from . import bnf
@@ -71,7 +71,7 @@ class GramaticaLibreContexto(Mapping[Variable, Sequence[Cadena]]):
     @cached_property
     def terminales(self) -> Collection[Terminal]:
         """Devuelve los terminales de la gramática."""
-        resultado = set()
+        resultado: set[Terminal] = set()
         for cadenas in self._datos.values():
             for cadena in cadenas:
                 for simbolo in cadena:
@@ -280,32 +280,36 @@ class ArbolDeDerivacion:
         Devuelve el árbol de derivación en formato Graphviz.
     """
 
-    attrs_nodos = {
+    attrs_nodos: dict[str, str] = {
         "fontname": "serif",
         "fontsize": "11",
         "oridering": "out",
     }
-    attrs_variables = {}
-    attrs_terminales = {"fontname": "monospace"}
-    fmt_variable = "<<i>{}</i>>"
-    fmt_terminal = "<{}>"
+    attrs_variables: dict[str, str] = {}
+    attrs_terminales: dict[str, str] = {"fontname": "monospace"}
+    fmt_variable: str = "<<i>{}</i>>"
+    fmt_terminal: str = "<{}>"
 
     def __init__(
         self, derivacion: Derivacion, gramatica: GramaticaLibreContexto
     ) -> None:
         self._derivacion = derivacion
         self._gramatica = gramatica
-        self._arbol: pygraphviz.AGraph | None = None
+        self._arbol = pygraphviz.AGraph(directed=True, strict=True)
         self._cuenta_etiquetas: Counter[str] = Counter()
         self._construir_arbol()
 
     def a_graphviz(self) -> str:
         """Devuelve el árbol de derivación en formato Graphviz."""
-        return self._arbol.to_string()
+        return str(self._arbol)
 
     def a_svg(self) -> str:
         """Devuelve una representación SVG del árbol de derivación."""
-        return self._arbol.draw(format="svg", prog="dot").decode("utf-8")
+        resultado = self._arbol.draw(format="svg", prog="dot")
+        if resultado is None:
+            raise RuntimeError("Error al generar el SVG.")
+        assert isinstance(resultado, bytes)
+        return resultado.decode("utf-8")
 
     def _repr_svg_(self) -> str:
         """Devuelve una representación SVG del árbol de derivación."""
@@ -313,7 +317,8 @@ class ArbolDeDerivacion:
 
     def _nodo(self, simbolo: Simbolo) -> _Nodo:
         """Crea un nodo asociado con un símbolo."""
-        etiqueta = html.escape(simbolo.data or "ε")
+        assert self._arbol is not None
+        etiqueta = html.escape(simbolo.valor or "ε")
         self._cuenta_etiquetas[etiqueta] += 1
         nombre = etiqueta + f"{self._cuenta_etiquetas[etiqueta]}"
         if isinstance(simbolo, Variable):
@@ -340,8 +345,7 @@ class ArbolDeDerivacion:
     def _construir_arbol(self) -> None:
         """Construye el árbol de derivación."""
         producciones = self._gramatica.producciones
-        self._arbol = arbol = pygraphviz.AGraph(directed=True, strict=True)
-        arbol.node_attr.update(self.attrs_nodos)
+        self._arbol.node_attr.update(self.attrs_nodos)
         hojas_variables: list[_Nodo] = [self._nodo(self._gramatica.variable_inicial)]
         for derivacion in self._derivacion.historial:
             # Obtener la producción que se aplicó.
@@ -358,7 +362,7 @@ class ArbolDeDerivacion:
             if not hijos:  # ¿La producción es vacía?
                 hijos = [self._nodo(Terminal(""))]
             for hijo in hijos:
-                arbol.add_edge(nodo.nombre, hijo.nombre)
+                self._arbol.add_edge(nodo.nombre, hijo.nombre)
 
             # Reemplazar nodo por hijos en las hojas
             hojas_variables[i_nodo : i_nodo + 1] = [
