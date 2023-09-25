@@ -11,7 +11,9 @@ Antes de comenzar se deben de cumplir los siguientes requisitos:
 
 - Tener instalado [Git][2].
 - Tener instalado el motor de [Docker][3]; en las computadoras con Windows se
-  requiere instalar previamente el [Subsistema de Windows para Linux][7].
+  requiere instalar previamente el [Subsistema de Windows para Linux][7] y,
+  además, se requiere tener abierto la aplicación [*Docker Desktop*][11] previo
+  a abrir el proyecto.
 - Tener instalado [Visual Studio Code][4].
 - Tener instalado el plugin de [Dev Containers][5] en Visual Studio Code.
 
@@ -97,7 +99,6 @@ Solo asegúrate de descargar los cambios más recientes de vez en cuando
 utilizando el ícono de *sincronizar* 🗘 en la barra de estado de Visual Studio
 Code, o bien, escribiendo el comando `git pull` en la terminal.
 
-
 ### No le entiendo a sus símbolos matemáticos. ¿Qué hago?
 
 La notación matemática es estándar en el área de matemáticas y las ciencias de
@@ -124,6 +125,10 @@ El contenedor está basado en Linux porque es el sistema operativo más utilizad
 en el área de las ciencias de la computación, tiene un gran soporte para
 herramientas de desarrollo, y es de código abierto.
 
+### ¿Me puede ayudar con mi tarea de esta u otra materia?
+
+No puedo porque ando siempre en [#ModoChamba][12].
+
 ### ¿Me puede aprobar el curso si solamente me quiero dedicar a hacer teoría?
 
 Respuesta corta: No. Respuesta larga: Noooooooooooooooooooooooooooooooooooooo.
@@ -138,3 +143,5 @@ Respuesta corta: No. Respuesta larga: Noooooooooooooooooooooooooooooooooooooo.
 [8]: https://jupyter.org/
 [9]: https://markdown.es/sintaxis-markdown/
 [10]: http://mirrors.ctan.org/info/lshort/spanish/lshort-letter.pdf
+[11]: https://docs.docker.com/desktop/use-desktop/
+[12]: https://twitter.com/hashtag/ModoChamba
