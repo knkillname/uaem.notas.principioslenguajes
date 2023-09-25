@@ -1,9 +1,12 @@
 """Módulo de gramáticas libres de contexto."""
-import collections
+import html
 import itertools
+from collections import Counter
 from collections.abc import Collection, Iterator, Mapping, Sequence
 from functools import cached_property
-from typing import Self
+from typing import NamedTuple, Self
+
+import pygraphviz
 
 from .. import notacion
 from . import bnf
@@ -13,6 +16,7 @@ from .estructuras import (
     GramaticaLibreContextoMap,
     MultiProduccion,
     Produccion,
+    Simbolo,
     Terminal,
     Variable,
 )
@@ -104,7 +108,7 @@ class GramaticaLibreContexto(Mapping[Variable, Sequence[Cadena]]):
         """
         # Encontrar las variables que aparecen en la cadena y contar
         # cuántas veces aparece cada una.
-        no_terminales = collections.Counter(
+        no_terminales = Counter(
             simbolo for simbolo in cadena if isinstance(simbolo, Variable)
         )
 
@@ -211,6 +215,10 @@ class Derivacion:
         self._cadena = produccion.aplicar(self._cadena, n_salto)
         return self
 
+    def arbol(self) -> "ArbolDeDerivacion":
+        """Devuelve el árbol de derivación."""
+        return ArbolDeDerivacion(self, self._gramatica)
+
     def _repr_latex_(self) -> str:
         """Devuelve una representación LaTeX de la derivación."""
         # pylint: disable=protected-access
@@ -233,3 +241,126 @@ class Derivacion:
             lineas.append(rf"& \Rightarrow {_latex(cadena)} \\")
         lineas.append(r"\end{align*}")
         return "$${}$$".format("\n".join(lineas))
+
+
+class _Nodo(NamedTuple):
+    """Representa un nodo del árbol de derivación.
+
+    Atributos
+    ---------
+    nombre : str
+        Identificador único del nodo.
+    simbolo : Simbolo
+        Símbolo asociado con el nodo.
+    """
+
+    nombre: str
+    simbolo: Simbolo
+
+
+class ArbolDeDerivacion:
+    """Representa un árbol de derivación.
+
+    Atributos
+    ---------
+    attrs_nodos : dict[str, str]
+        Atributos de los nodos.
+    attrs_variables : dict[str, str]
+        Atributos de los nodos asociados con variables.
+    attrs_terminales : dict[str, str]
+        Atributos de los nodos asociados con terminales.
+    fmt_variable : str
+        Formato de los nodos asociados con variables.
+    fmt_terminal : str
+        Formato de los nodos asociados con terminales.
+
+    Métodos
+    -------
+    a_graphviz()
+        Devuelve el árbol de derivación en formato Graphviz.
+    """
+
+    attrs_nodos = {
+        "fontname": "serif",
+        "fontsize": "11",
+        "oridering": "out",
+    }
+    attrs_variables = {}
+    attrs_terminales = {"fontname": "monospace"}
+    fmt_variable = "<<i>{}</i>>"
+    fmt_terminal = "<{}>"
+
+    def __init__(
+        self, derivacion: Derivacion, gramatica: GramaticaLibreContexto
+    ) -> None:
+        self._derivacion = derivacion
+        self._gramatica = gramatica
+        self._arbol: pygraphviz.AGraph | None = None
+        self._cuenta_etiquetas: Counter[str] = Counter()
+        self._construir_arbol()
+
+    def a_graphviz(self) -> str:
+        """Devuelve el árbol de derivación en formato Graphviz."""
+        return self._arbol.to_string()
+
+    def a_svg(self) -> str:
+        """Devuelve una representación SVG del árbol de derivación."""
+        return self._arbol.draw(format="svg", prog="dot").decode("utf-8")
+
+    def _repr_svg_(self) -> str:
+        """Devuelve una representación SVG del árbol de derivación."""
+        return self.a_svg()
+
+    def _nodo(self, simbolo: Simbolo) -> _Nodo:
+        """Crea un nodo asociado con un símbolo."""
+        etiqueta = html.escape(simbolo.data or "ε")
+        self._cuenta_etiquetas[etiqueta] += 1
+        nombre = etiqueta + f"{self._cuenta_etiquetas[etiqueta]}"
+        if isinstance(simbolo, Variable):
+            etiqueta = self.fmt_variable.format(etiqueta)
+            attrs = self.attrs_variables
+        else:
+            etiqueta = self.fmt_terminal.format(etiqueta)
+            attrs = self.attrs_terminales
+        self._arbol.add_node(nombre, label=etiqueta, **attrs)
+        return _Nodo(nombre=nombre, simbolo=simbolo)
+
+    def _encontrar_nodo(
+        self, simbolo: Simbolo, nodos: list[_Nodo], n_salto: int
+    ) -> int:
+        """Encuentra el nodo asociado con un símbolo."""
+        cuenta = 0
+        for i_nodo, nodo in enumerate(nodos):
+            if nodo.simbolo == simbolo:
+                if cuenta == n_salto:
+                    return i_nodo
+                cuenta += 1
+        return -1
+
+    def _construir_arbol(self) -> None:
+        """Construye el árbol de derivación."""
+        producciones = self._gramatica.producciones
+        self._arbol = arbol = pygraphviz.AGraph(directed=True, strict=True)
+        arbol.node_attr.update(self.attrs_nodos)
+        hojas_variables: list[_Nodo] = [self._nodo(self._gramatica.variable_inicial)]
+        for derivacion in self._derivacion.historial:
+            # Obtener la producción que se aplicó.
+            izq, der = producciones[derivacion["n_produccion"]]
+
+            # Encontrar nodo a expandir.
+            i_nodo = self._encontrar_nodo(izq, hojas_variables, derivacion["n_salto"])
+            if i_nodo == -1:
+                continue  # No hay nada que hacer.
+            nodo = hojas_variables[i_nodo]
+
+            # Crear nodos hijos y conectarlos.
+            hijos = [self._nodo(simbolo) for simbolo in der]
+            if not hijos:  # ¿La producción es vacía?
+                hijos = [self._nodo(Terminal(""))]
+            for hijo in hijos:
+                arbol.add_edge(nodo.nombre, hijo.nombre)
+
+            # Reemplazar nodo por hijos en las hojas
+            hojas_variables[i_nodo : i_nodo + 1] = [
+                nodo for nodo in hijos if isinstance(nodo.simbolo, Variable)
+            ]
