@@ -284,8 +284,10 @@ class ArbolDeDerivacion:
         "fontname": "serif",
         "fontsize": "11",
         "oridering": "out",
+        "shape": "none",
     }
-    attrs_variables: dict[str, str] = {}
+    attrs_aristas: dict[str, str] = {"color": "gray"}
+    attrs_variables: dict[str, str] = {"fontcolor": "firebrick"}
     attrs_terminales: dict[str, str] = {"fontname": "monospace"}
     fmt_variable: str = "<<i>{}</i>>"
     fmt_terminal: str = "<{}>"
@@ -295,7 +297,7 @@ class ArbolDeDerivacion:
     ) -> None:
         self._derivacion = derivacion
         self._gramatica = gramatica
-        self._arbol = pygraphviz.AGraph(directed=True, strict=True)
+        self._arbol: pygraphviz.AGraph
         self._cuenta_etiquetas: Counter[str] = Counter()
         self._construir_arbol()
 
@@ -315,7 +317,7 @@ class ArbolDeDerivacion:
         """Devuelve una representación SVG del árbol de derivación."""
         return self.a_svg()
 
-    def _nodo(self, simbolo: Simbolo) -> _Nodo:
+    def _crear_nodo(self, simbolo: Simbolo) -> _Nodo:
         """Crea un nodo asociado con un símbolo."""
         assert self._arbol is not None
         etiqueta = html.escape(simbolo.valor or "ε")
@@ -334,37 +336,39 @@ class ArbolDeDerivacion:
         self, simbolo: Simbolo, nodos: list[_Nodo], n_salto: int
     ) -> int:
         """Encuentra el nodo asociado con un símbolo."""
-        cuenta = 0
-        for i_nodo, nodo in enumerate(nodos):
-            if nodo.simbolo == simbolo:
-                if cuenta == n_salto:
-                    return i_nodo
-                cuenta += 1
-        return -1
+        indices = (i for i, nodo in enumerate(nodos) if nodo.simbolo == simbolo)
+        return next(itertools.islice(indices, n_salto, None), -1)
 
     def _construir_arbol(self) -> None:
         """Construye el árbol de derivación."""
         producciones = self._gramatica.producciones
-        self._arbol.node_attr.update(self.attrs_nodos)
-        hojas_variables: list[_Nodo] = [self._nodo(self._gramatica.variable_inicial)]
+
+        # Crear el árbol de derivación.
+        arbol = self._arbol = pygraphviz.AGraph(directed=True, strict=True)
+        arbol.node_attr.update(self.attrs_nodos)
+        arbol.edge_attr.update(self.attrs_aristas)
+
+        # Crear la raíz, que a su vez es la primera hoja.
+        raiz = self._crear_nodo(self._gramatica.variable_inicial)
+        hojas: list[_Nodo] = [raiz]  # Hojas que contienen variables.
+
+        # Iterar sobre historial de reemplazos.
         for derivacion in self._derivacion.historial:
             # Obtener la producción que se aplicó.
             izq, der = producciones[derivacion["n_produccion"]]
 
-            # Encontrar nodo a expandir.
-            i_nodo = self._encontrar_nodo(izq, hojas_variables, derivacion["n_salto"])
-            if i_nodo == -1:
+            # Encontrar índice del nodo a expandir.
+            i = self._encontrar_nodo(izq, hojas, derivacion["n_salto"])
+            if i == -1:
                 continue  # No hay nada que hacer.
-            nodo = hojas_variables[i_nodo]
+            nodo = hojas[i]
 
             # Crear nodos hijos y conectarlos.
-            hijos = [self._nodo(simbolo) for simbolo in der]
+            hijos = [self._crear_nodo(simbolo) for simbolo in der]
             if not hijos:  # ¿La producción es vacía?
-                hijos = [self._nodo(Terminal(""))]
+                hijos = [self._crear_nodo(Terminal(""))]
             for hijo in hijos:
                 self._arbol.add_edge(nodo.nombre, hijo.nombre)
 
             # Reemplazar nodo por hijos en las hojas
-            hojas_variables[i_nodo : i_nodo + 1] = [
-                nodo for nodo in hijos if isinstance(nodo.simbolo, Variable)
-            ]
+            hojas[i : i + 1] = (v for v in hijos if isinstance(v.simbolo, Variable))
