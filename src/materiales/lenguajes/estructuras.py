@@ -63,7 +63,7 @@ class Variable(Simbolo):
         return f"***{self._valor}***"
 
     def _repr_latex_(self) -> str:
-        return rf"${{{self._valor}}}$"
+        return rf"$\textcolor{{firebrick}}{{\textit{{{self._valor}}}}}$"
 
 
 class Terminal(Simbolo):
