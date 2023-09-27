@@ -1,3 +1,4 @@
+"""Pruebas para la clase ComputadoraHombrePequenno"""
 import itertools
 import unittest
 
