@@ -16,6 +16,7 @@
     "cSpell.language": "en,es",
     "cSpell.words": [
         "arbol",
+        "arrowsize",
         "caracter",
         "carácteres",
         "chones",
@@ -29,7 +30,9 @@
         "Descomenta",
         "dolares",
         "enumerador",
+        "enumeradores",
         "ésimo",
+        "fontcolor",
         "fontname",
         "fontsize",
         "gramatica",
@@ -43,6 +46,7 @@
         "Kleene",
         "lexicográficamente",
         "monoespaciado",
+        "nodesep",
         "notacion",
         "numerabilidad",
         "numeros",
@@ -62,6 +66,7 @@
         "subcadenas",
         "Sucesion",
         "talavera",
+        "textcolor",
         "texttt",
         "tokenizar",
         "varepsilon"

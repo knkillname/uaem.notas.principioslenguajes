@@ -1,4 +1,5 @@
 """Módulo de gramáticas libres de contexto."""
+import dataclasses
 import html
 import itertools
 from collections import Counter
@@ -243,7 +244,7 @@ class Derivacion:
         return "$${}$$".format("\n".join(lineas))
 
 
-class _Nodo(NamedTuple):
+class Nodo(NamedTuple):
     """Representa un nodo del árbol de derivación.
 
     Atributos
@@ -256,6 +257,56 @@ class _Nodo(NamedTuple):
 
     nombre: str
     simbolo: Simbolo
+
+
+_ATTRS_DEFECTO = {
+    "grafo": {"fontname": "serif", "nodesep": "0.5"},
+    "nodos": {"oridering": "out", "shape": "plain"},
+    "aristas": {"color": "cornflowerblue", "arrowhead": "none"},
+    "variables": {"fontcolor": "firebrick"},
+    "terminales": {"fontname": "monospace"},
+    "epsilon": {"fontcolor": "slategray"},
+}
+
+
+@dataclasses.dataclass
+class AtributosArbol:
+    """Representa los atributos de un árbol de derivación.
+
+    Atributos
+    ---------
+    grafo : dict[str, str]
+        Atributos del grafo.
+    nodos : dict[str, str]
+        Atributos de los nodos.
+    aristas : dict[str, str]
+        Atributos de las aristas.
+    variables : dict[str, str]
+        Atributos de los nodos asociados con variables.
+    terminales : dict[str, str]
+        Atributos de los nodos asociados con terminales.
+    epsilon : dict[str, str]
+        Atributos de los nodos asociados con la cadena vacía.
+    """
+
+    grafo: dict[str, str] = dataclasses.field(
+        default_factory=_ATTRS_DEFECTO["grafo"].copy
+    )
+    nodos: dict[str, str] = dataclasses.field(
+        default_factory=_ATTRS_DEFECTO["nodos"].copy
+    )
+    aristas: dict[str, str] = dataclasses.field(
+        default_factory=_ATTRS_DEFECTO["aristas"].copy
+    )
+    variables: dict[str, str] = dataclasses.field(
+        default_factory=_ATTRS_DEFECTO["variables"].copy
+    )
+    terminales: dict[str, str] = dataclasses.field(
+        default_factory=_ATTRS_DEFECTO["terminales"].copy
+    )
+    epsilon: dict[str, str] = dataclasses.field(
+        default_factory=_ATTRS_DEFECTO["epsilon"].copy
+    )
 
 
 class ArbolDeDerivacion:
@@ -280,26 +331,20 @@ class ArbolDeDerivacion:
         Devuelve el árbol de derivación en formato Graphviz.
     """
 
-    attrs_nodos: dict[str, str] = {
-        "fontname": "serif",
-        "fontsize": "11",
-        "oridering": "out",
-        "shape": "none",
-    }
-    attrs_aristas: dict[str, str] = {"color": "gray"}
-    attrs_variables: dict[str, str] = {"fontcolor": "firebrick"}
-    attrs_terminales: dict[str, str] = {"fontname": "monospace"}
-    fmt_variable: str = "<<i>{}</i>>"
-    fmt_terminal: str = "<{}>"
-
     def __init__(
-        self, derivacion: Derivacion, gramatica: GramaticaLibreContexto
+        self,
+        derivacion: Derivacion,
+        gramatica: GramaticaLibreContexto,
+        *,  # Parámetros opcionales y nombrados a partir de aquí.
+        atributos: AtributosArbol | None = None,
     ) -> None:
         self._derivacion = derivacion
         self._gramatica = gramatica
         self._arbol: pygraphviz.AGraph
         self._cuenta_etiquetas: Counter[str] = Counter()
-        self._construir_arbol()
+        self._atributos = atributos if atributos is not None else AtributosArbol()
+
+        self.reconstruir_arbol()
 
     def a_graphviz(self) -> str:
         """Devuelve el árbol de derivación en formato Graphviz."""
@@ -313,44 +358,101 @@ class ArbolDeDerivacion:
         assert isinstance(resultado, bytes)
         return resultado.decode("utf-8")
 
+    @property
+    def atributos(self):
+        """Devuelve los atributos del árbol de derivación."""
+        return self._atributos
+
     def _repr_svg_(self) -> str:
         """Devuelve una representación SVG del árbol de derivación."""
         return self.a_svg()
 
-    def _crear_nodo(self, simbolo: Simbolo) -> _Nodo:
+    def etiquetar_variable(self, simbolo: Variable) -> str:
+        """Devuelve la etiqueta asociada con una variable.
+
+        Parámetros
+        ----------
+        simbolo : Variable
+            La variable a etiquetar.
+
+        Devuelve
+        --------
+        str
+            La etiqueta asociada con la variable.
+        """
+        return f"<<i>{html.escape(simbolo.valor)}</i>>"
+
+    def etiquetar_terminal(self, simbolo: Terminal) -> str:
+        """Devuelve la etiqueta asociada con un terminal.
+
+        Parámetros
+        ----------
+        simbolo : Terminal
+            El símbolo terminal a etiquetar.
+
+        Devuelve
+        --------
+        str
+            La etiqueta asociada con el terminal.
+        """
+        if not simbolo.valor:  # ¿Es la cadena vacía?
+            return "<<i>ε</i>>"
+        # Reemplazar espacios en blanco por espacios visibles:
+        return simbolo.valor.replace(" ", "␣").replace("\t", "␉").replace("\n", "␤")
+
+    def nombrar(self, simbolo: Simbolo) -> str:
+        """Devuelve un id único para un nodo asociado con un símbolo.
+
+        Parámetros
+        ----------
+        simbolo : Simbolo
+            El símbolo asociado con el nodo.
+
+        Devuelve
+        --------
+        str
+            Un id único para el nodo.
+        """
+        etiqueta = "var_" if isinstance(simbolo, Variable) else "trm_"
+        etiqueta += simbolo.valor or "ε"
+        self._cuenta_etiquetas[etiqueta] += 1
+        return f"{etiqueta}{self._cuenta_etiquetas[etiqueta]}"
+
+    def crear_nodo(self, simbolo: Simbolo) -> Nodo:
         """Crea un nodo asociado con un símbolo."""
         assert self._arbol is not None
-        etiqueta = html.escape(simbolo.valor or "ε")
-        self._cuenta_etiquetas[etiqueta] += 1
-        nombre = etiqueta + f"{self._cuenta_etiquetas[etiqueta]}"
+        nombre = self.nombrar(simbolo)
         if isinstance(simbolo, Variable):
-            etiqueta = self.fmt_variable.format(etiqueta)
-            attrs = self.attrs_variables
+            etiqueta = self.etiquetar_variable(simbolo)
+            attrs = self.atributos.variables
         else:
-            etiqueta = self.fmt_terminal.format(etiqueta)
-            attrs = self.attrs_terminales
-        self._arbol.add_node(nombre, label=etiqueta, **attrs)
-        return _Nodo(nombre=nombre, simbolo=simbolo)
+            assert isinstance(simbolo, Terminal)  # Si no es variable, es terminal.
+            etiqueta = self.etiquetar_terminal(simbolo)
+            attrs = self.atributos.terminales
+            if not simbolo.valor:
+                attrs = self.atributos.epsilon
 
-    def _encontrar_nodo(
-        self, simbolo: Simbolo, nodos: list[_Nodo], n_salto: int
-    ) -> int:
+        self._arbol.add_node(nombre, label=etiqueta, **attrs)
+        return Nodo(nombre=nombre, simbolo=simbolo)
+
+    def encontrar_nodo(self, simbolo: Simbolo, nodos: list[Nodo], n_salto: int) -> int:
         """Encuentra el nodo asociado con un símbolo."""
         indices = (i for i, nodo in enumerate(nodos) if nodo.simbolo == simbolo)
         return next(itertools.islice(indices, n_salto, None), -1)
 
-    def _construir_arbol(self) -> None:
+    def reconstruir_arbol(self) -> Self:
         """Construye el árbol de derivación."""
         producciones = self._gramatica.producciones
 
         # Crear el árbol de derivación.
         arbol = self._arbol = pygraphviz.AGraph(directed=True, strict=True)
-        arbol.node_attr.update(self.attrs_nodos)
-        arbol.edge_attr.update(self.attrs_aristas)
+        arbol.graph_attr.update(self.atributos.grafo)
+        arbol.node_attr.update(self.atributos.nodos)
+        arbol.edge_attr.update(self.atributos.aristas)
 
         # Crear la raíz, que a su vez es la primera hoja.
-        raiz = self._crear_nodo(self._gramatica.variable_inicial)
-        hojas: list[_Nodo] = [raiz]  # Hojas que contienen variables.
+        raiz = self.crear_nodo(self._gramatica.variable_inicial)
+        hojas: list[Nodo] = [raiz]  # Hojas que contienen variables.
 
         # Iterar sobre historial de reemplazos.
         for derivacion in self._derivacion.historial:
@@ -358,17 +460,18 @@ class ArbolDeDerivacion:
             izq, der = producciones[derivacion["n_produccion"]]
 
             # Encontrar índice del nodo a expandir.
-            i = self._encontrar_nodo(izq, hojas, derivacion["n_salto"])
+            i = self.encontrar_nodo(izq, hojas, derivacion["n_salto"])
             if i == -1:
                 continue  # No hay nada que hacer.
             nodo = hojas[i]
 
             # Crear nodos hijos y conectarlos.
-            hijos = [self._crear_nodo(simbolo) for simbolo in der]
+            hijos = [self.crear_nodo(simbolo) for simbolo in der]
             if not hijos:  # ¿La producción es vacía?
-                hijos = [self._crear_nodo(Terminal(""))]
+                hijos = [self.crear_nodo(Terminal(""))]
             for hijo in hijos:
                 self._arbol.add_edge(nodo.nombre, hijo.nombre)
 
             # Reemplazar nodo por hijos en las hojas
             hojas[i : i + 1] = (v for v in hijos if isinstance(v.simbolo, Variable))
+        return self
