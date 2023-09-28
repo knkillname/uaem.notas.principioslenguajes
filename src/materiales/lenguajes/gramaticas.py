@@ -1,4 +1,5 @@
 """Módulo de gramáticas libres de contexto."""
+import collections
 import dataclasses
 import html
 import itertools
@@ -122,6 +123,25 @@ class GramaticaLibreContexto(Mapping[Variable, Sequence[Cadena]]):
             for n_salto in range(1, no_terminales[izq]):
                 # A las siguientes apariciones.
                 yield DerivacionDict(n_produccion=n_produccion, n_salto=n_salto)
+
+    def producir_lenguaje(self) -> Iterator[str]:
+        """Enumera todas las cadenas del lenguaje de la gramática."""
+        cadenas = collections.deque([[self.variable_inicial]])
+        while cadenas:
+            palabra = cadenas.popleft()
+            cadena = (i for i, sim in enumerate(palabra) if isinstance(sim, Variable))
+            try:
+                # Encontrar el índice de la variable más a la izquierda.
+                i = next(cadena)
+            except StopIteration:
+                # No hay más variables en la palabra.
+                yield "".join(sim.valor for sim in palabra)
+                continue
+            # Realizar todas las sustituciones posibles para esa variable.
+            variable = palabra[i]
+            for sustitucion in self[variable]:
+                nueva = [*palabra[:i], *sustitucion, *palabra[i + 1 :]]
+                cadenas.append(nueva)  # Agregar la nueva palabra al final de la cola.
 
     def hacer_derivacion(self) -> "Derivacion":
         """Inicia una derivación de la gramática."""
@@ -359,7 +379,7 @@ class ArbolDeDerivacion:
         return resultado.decode("utf-8")
 
     @property
-    def atributos(self):
+    def atributos(self) -> AtributosArbol:
         """Devuelve los atributos del árbol de derivación."""
         return self._atributos
 
