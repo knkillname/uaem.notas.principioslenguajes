@@ -1,7 +1,11 @@
 """Módulo para la notación de objetos matemáticos."""
 
-from collections.abc import Hashable
+import itertools
+from collections.abc import Hashable, Iterable, Sequence
 from typing import Any, TypeVar
+
+from materiales.lenguajes.estructuras import Terminal
+from materiales.lenguajes.latex import obtener_latex
 
 T = TypeVar("T", bound=Hashable)
 
@@ -20,6 +24,28 @@ class Conjunto(frozenset[T]):
         elementos.sort()
         interior = ", ".join(elementos)
         return f"{{{interior}}}"
+
+
+class Lenguaje(Sequence[str]):
+    """Representa un conjunto numerable de elementos."""
+
+    def __init__(self, iterable: Iterable[str], *, rebanada: slice) -> None:
+        self._rebanada = rebanada
+        self._datos = list(
+            itertools.islice(iterable, rebanada.start, rebanada.stop, rebanada.step)
+        )
+
+    def __getitem__(self, indice: int) -> str:
+        return self._datos[indice]
+
+    def __len__(self) -> int:
+        return len(self._datos)
+
+    def _repr_latex_(self) -> str:
+        # pylint: disable=protected-access
+        cadenas = (obtener_latex(Terminal(cadena)) for cadena in self._datos)
+        cadenas = itertools.chain(cadenas, (r"\ldots",))
+        return rf"$\{{{', '.join(cadenas)}\}}$"
 
 
 class Sucesion(tuple[Any, ...]):
@@ -53,49 +79,3 @@ class ListaNumerada(tuple[Any, ...]):
                 elementos.append(str(elemento))
         interior = "\n".join(f"{i}. {e}" for i, e in enumerate(elementos, start=1))
         return f"{interior}"
-
-
-def quitar_dolares(texto: str) -> str:
-    """Quita el entorno matemático de un texto LaTeX.
-
-    La función devuelve el texto sin el entorno matemático, que puede
-    estar dado por un signo $, un par de signos $$ o entre \\[ y \\].
-
-    Parámetros
-    ----------
-    texto : str
-        El texto LaTeX del que se quiere quitar el entorno matemático.
-
-    Devuelve
-    --------
-    str
-        El texto sin el entorno matemático.
-    """
-    texto = texto.strip()
-    if texto.startswith("$$") and texto.endswith("$$"):
-        return texto[2:-2]
-    if texto.startswith("$") and texto.endswith("$"):
-        return texto[1:-1]
-    if texto.startswith("\\[") and texto.endswith("\\]"):
-        return texto[2:-2]
-    return texto
-
-
-def obtener_latex(obj: Any) -> str:
-    """Obtiene el código LaTeX de un objeto.
-
-    Parámetros
-    ----------
-    obj : Any
-        El objeto del que se quiere obtener el código LaTeX.
-
-    Devuelve
-    --------
-    str
-        El código LaTeX del objeto.
-    """
-    # pylint: disable=protected-access
-    try:
-        return quitar_dolares(obj._repr_latex_())
-    except AttributeError:
-        return str(obj)

@@ -8,7 +8,9 @@ from collections.abc import Collection, Iterator, Mapping, Sequence
 from functools import cached_property
 from typing import NamedTuple, Self
 
-import pygraphviz  # type: ignore
+import pygraphviz
+
+import materiales.lenguajes.latex  # type: ignore
 
 from .. import notacion
 from . import bnf
@@ -23,7 +25,7 @@ from .estructuras import (
     Variable,
 )
 
-_latex = notacion.obtener_latex
+_latex = materiales.lenguajes.latex.obtener_latex
 
 
 class GramaticaLibreContexto(Mapping[Variable, Sequence[Cadena]]):
@@ -273,25 +275,19 @@ class Derivacion:
                 r"\Rightarrow "
                 rf"{_latex(self._cadena)} \qquad {comentario_fmt.format(n_regla)}$"
             )
-        lineas = [r"\begin{align*}"]
-        historial = itertools.chain(
-            (
-                (derivacion["cadena"], derivacion["n_regla"])
-                for derivacion in self._historial
-            ),
-            ((self._cadena),),
-        )
-        inicial, n_regla = next(historial)
-        cadena, n_regla_siguiente = next(historial)
-        comentario = comentario_fmt.format(n_regla + 1)
+        lineas = [r"\begin{align*}"]  # Lista de líneas de LaTeX.
+        cadenas = (derivacion["cadena"] for derivacion in self._historial)
+        cadenas = itertools.chain(cadenas, (self._cadena,))  # Agregar la cadena final.
+        reglas = (derivacion["n_regla"] + 1 for derivacion in self._historial)
+        cad_inicial = next(cadenas)
+        cadena, n_regla = next(cadenas), next(reglas)
+        comentario = comentario_fmt.format(n_regla)
         lineas.append(
-            rf"{_latex(inicial)} & \Rightarrow {_latex(cadena)} & {comentario} \\"
+            rf"{_latex(cad_inicial)} & \Rightarrow {_latex(cadena)} & {comentario} \\"
         )
-        n_regla = n_regla_siguiente
-        for cadena, n_regla_siguiente in historial:
-            comentario = comentario_fmt.format(n_regla + 1)
-            lineas.append(rf"& \Rightarrow {_latex(cadena)} \\")
-            n_regla = n_regla_siguiente
+        for cadena, n_regla in zip(cadenas, reglas):
+            comentario = comentario_fmt.format(n_regla)
+            lineas.append(rf"& \Rightarrow {_latex(cadena)} & {comentario}\\")
         lineas.append(r"\end{align*}")
         return "$${}$$".format("\n".join(lineas))
 

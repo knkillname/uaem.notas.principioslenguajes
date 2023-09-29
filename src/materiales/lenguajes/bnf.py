@@ -52,7 +52,7 @@ class ParserBNFLibreContexto:
         "PRODUCCION": r"::=",  # La producción se simboliza con ::=
         "NUEVA_LINEA": r"\n",  # Salto de línea
         "COMENTARIO": r"\#[^\n]*",  # Los comentarios comienzan con #
-        "ESPACIO": r"\s+",  # Cualquier espacio en blanco
+        "ESPACIO": r"\s+?",  # Cualquier espacio en blanco
         "FIN": r"$",  # Fin de la cadena
         "ERROR": r".",  # Cualquier otro carácter
     }

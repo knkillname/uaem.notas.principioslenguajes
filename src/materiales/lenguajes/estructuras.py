@@ -4,7 +4,7 @@ from collections.abc import Hashable, Iterable, Mapping, Sequence
 from functools import total_ordering
 from typing import NamedTuple, NotRequired, Self, TypedDict
 
-from ..notacion import obtener_latex as _latex
+from .latex import obtener_latex as _latex
 
 
 @total_ordering
@@ -77,12 +77,15 @@ class Terminal(Simbolo):
     def _repr_markdown_(self) -> str:
         if not self:
             return r"${{\varepsilon}}$"
-        return f"`{self._valor}`"
+        # Poner espacios visibles
+        valor = self._valor.replace(" ", "␣")
+        return f"`{valor}`"
 
     def _repr_latex_(self) -> str:
         if not self:
             return r"$\varepsilon$"
-        return rf"$\texttt{{{self._valor}}}$"
+        valor = self._valor.replace(" ", "␣")
+        return rf"$\texttt{{{valor}}}$"
 
 
 TCadena = Sequence[Simbolo]
