@@ -16,8 +16,8 @@ from .estructuras import (
     Cadena,
     DerivacionDict,
     GramaticaLibreContextoMap,
-    MultiProduccion,
-    Produccion,
+    MultiRegla,
+    Regla,
     Simbolo,
     Terminal,
     Variable,
@@ -31,16 +31,36 @@ class GramaticaLibreContexto(Mapping[Variable, Sequence[Cadena]]):
 
     def __init__(self, gramatica: GramaticaLibreContextoMap) -> None:
         """Inicializa la gramática."""
+        self._validar_gramatica(gramatica)
         self._datos: GramaticaLibreContextoMap = gramatica
 
-        # Construir el índice de las producciones.
-        indice: dict[Variable, int] = {}
-        cuenta = 0
+    def _validar_gramatica(self, gramatica):
+        if not isinstance(gramatica, Mapping):
+            if isinstance(gramatica, str):
+                clase = self.__class__.__name__
+                raise TypeError(
+                    "La gramática debe ser un diccionario. Si quieres "
+                    "construir una gramática a partir de una cadena de "
+                    f"texto, usa el método '{clase}.desde_bnf'."
+                )
+            raise TypeError("La gramática debe ser un diccionario.")
         for izq, der in gramatica.items():
-            indice[izq] = cuenta
-            cuenta += len(der)
-
-        self._indice = indice
+            if not isinstance(izq, Variable):
+                raise TypeError(
+                    f"La variable izquierda '{izq}' no es una variable válida."
+                )
+            if not isinstance(der, Sequence):
+                raise TypeError(
+                    f"La variable derecha '{der}' no es una sucesión válida."
+                )
+            for cadena in der:
+                if not isinstance(cadena, Sequence):
+                    raise TypeError(f"La cadena '{cadena}' no es una sucesión válida.")
+                for simbolo in cadena:
+                    if not isinstance(simbolo, Simbolo):
+                        raise TypeError(
+                            f"El símbolo '{simbolo}' no es un símbolo válido."
+                        )
 
     @classmethod
     def desde_bnf(cls, texto: str) -> Self:
@@ -82,12 +102,12 @@ class GramaticaLibreContexto(Mapping[Variable, Sequence[Cadena]]):
         return notacion.Conjunto(resultado)
 
     @cached_property
-    def producciones(self) -> Sequence[Produccion]:
+    def reglas(self) -> Sequence[Regla]:
         """Devuelve las reglas de producción de la gramática."""
         resultado = []
         for izq, der in self._datos.items():
             for cadena in der:
-                resultado.append(Produccion(izq, Cadena(cadena)))
+                resultado.append(Regla(izq, Cadena(cadena)))
         return notacion.ListaNumerada(resultado)
 
     @cached_property
@@ -115,14 +135,14 @@ class GramaticaLibreContexto(Mapping[Variable, Sequence[Cadena]]):
         )
 
         # Encontrar las reglas de producción aplicables a la cadena.
-        for n_produccion, (izq, _) in enumerate(self.producciones):
+        for n_regla, (izq, _) in enumerate(self.reglas):
             if not no_terminales[izq]:  # ¿No aparece la variable en la cadena?
                 continue  # Ignoramos la producción.
             # Se puede aplicar la producción.
-            yield DerivacionDict(n_produccion=n_produccion)  # A la primera aparición.
+            yield DerivacionDict(n_regla=n_regla)  # A la primera aparición.
             for n_salto in range(1, no_terminales[izq]):
                 # A las siguientes apariciones.
-                yield DerivacionDict(n_produccion=n_produccion, n_salto=n_salto)
+                yield DerivacionDict(n_regla=n_regla, n_salto=n_salto)
 
     def producir_lenguaje(self) -> Iterator[str]:
         """Enumera todas las cadenas del lenguaje de la gramática."""
@@ -153,13 +173,13 @@ class GramaticaLibreContexto(Mapping[Variable, Sequence[Cadena]]):
 
     def __str__(self) -> str:
         """Devuelve una representación de la gramática."""
-        renglones = (MultiProduccion(izq, der) for izq, der in self._datos.items())
+        renglones = (MultiRegla(izq, der) for izq, der in self._datos.items())
         return "\n".join(str(prod) for prod in renglones)
 
     def _repr_markdown_(self) -> str:
         """Devuelve una representación de la gramática."""
         # pylint: disable=protected-access
-        renglones = (MultiProduccion(izq, der) for izq, der in self._datos.items())
+        renglones = (MultiRegla(izq, der) for izq, der in self._datos.items())
         return "\n".join(f"- {prod._repr_markdown_()}" for prod in renglones)
 
     def _repr_latex_(self) -> str:
@@ -169,7 +189,7 @@ class GramaticaLibreContexto(Mapping[Variable, Sequence[Cadena]]):
         for izq, der in self._datos.items():
             renglones.append(rf"{_latex(izq)} & \to {_latex(der)} \\")
         renglones.append(r"\end{align*}$")
-        return "${}$".format("\n".join(renglones))
+        return r"${}$".format("\n".join(renglones))
 
     def __getitem__(self, key: Variable) -> Sequence[Cadena]:
         """Devuelve las producciones de una variable."""
@@ -196,7 +216,7 @@ class Derivacion:
 
     Métodos
     -------
-    aplicar(n_produccion, n_salto=0)
+    aplicar(n_regla, n_salto=0)
         Aplica una regla de producción a la cadena.
     """
 
@@ -215,12 +235,12 @@ class Derivacion:
         """Devuelve el historial de la derivación."""
         return tuple(self._historial)
 
-    def aplicar(self, n_produccion: int, n_salto: int = 0) -> Self:
+    def aplicar_regla(self, n_regla: int, n_salto: int = 0) -> Self:
         """Aplica una regla de producción a la cadena.
 
         Parámetros
         ----------
-        n_produccion : int
+        n_regla : int
             El índice de la producción a aplicar, comenzando en 1.
         n_salto : int, opcional
             Cuando la variable aparece más de una vez en la cadena, este
@@ -229,11 +249,11 @@ class Derivacion:
             izquierda).
         """
         derivacion = DerivacionDict(
-            cadena=self._cadena, n_produccion=n_produccion - 1, n_salto=n_salto
+            cadena=self._cadena, n_regla=n_regla - 1, n_salto=n_salto
         )
         self._historial.append(derivacion)
-        produccion = self._gramatica.producciones[n_produccion - 1]
-        self._cadena = produccion.aplicar(self._cadena, n_salto)
+        regla = self._gramatica.reglas[n_regla - 1]
+        self._cadena = regla.aplicar(self._cadena, n_salto)
         return self
 
     def arbol(self) -> "ArbolDeDerivacion":
@@ -243,23 +263,35 @@ class Derivacion:
     def _repr_latex_(self) -> str:
         """Devuelve una representación LaTeX de la derivación."""
         # pylint: disable=protected-access
+        comentario_fmt = r"\text{{(por regla {})}}"
         if not self._historial:
             return f"${_latex(self._cadena)}$"
         if len(self._historial) == 1:
+            n_regla = self._historial[0]["n_regla"] + 1
             return (
                 f"${_latex(self._historial[0]['cadena'])} "
                 r"\Rightarrow "
-                f"{_latex(self._cadena)}$"
+                rf"{_latex(self._cadena)} \qquad {comentario_fmt.format(n_regla)}$"
             )
         lineas = [r"\begin{align*}"]
         historial = itertools.chain(
-            (derivacion["cadena"] for derivacion in self._historial), (self._cadena,)
+            (
+                (derivacion["cadena"], derivacion["n_regla"])
+                for derivacion in self._historial
+            ),
+            ((self._cadena),),
         )
-        inicial = next(historial)
-        cadena = next(historial)
-        lineas.append(rf"{_latex(inicial)} & \Rightarrow {_latex(cadena)} \\")
-        for cadena in historial:
+        inicial, n_regla = next(historial)
+        cadena, n_regla_siguiente = next(historial)
+        comentario = comentario_fmt.format(n_regla + 1)
+        lineas.append(
+            rf"{_latex(inicial)} & \Rightarrow {_latex(cadena)} & {comentario} \\"
+        )
+        n_regla = n_regla_siguiente
+        for cadena, n_regla_siguiente in historial:
+            comentario = comentario_fmt.format(n_regla + 1)
             lineas.append(rf"& \Rightarrow {_latex(cadena)} \\")
+            n_regla = n_regla_siguiente
         lineas.append(r"\end{align*}")
         return "$${}$$".format("\n".join(lineas))
 
@@ -462,7 +494,7 @@ class ArbolDeDerivacion:
 
     def reconstruir_arbol(self) -> Self:
         """Construye el árbol de derivación."""
-        producciones = self._gramatica.producciones
+        producciones = self._gramatica.reglas
 
         # Crear el árbol de derivación.
         arbol = self._arbol = pygraphviz.AGraph(directed=True, strict=True)
@@ -477,7 +509,7 @@ class ArbolDeDerivacion:
         # Iterar sobre historial de reemplazos.
         for derivacion in self._derivacion.historial:
             # Obtener la producción que se aplicó.
-            izq, der = producciones[derivacion["n_produccion"]]
+            izq, der = producciones[derivacion["n_regla"]]
 
             # Encontrar índice del nodo a expandir.
             i = self.encontrar_nodo(izq, hojas, derivacion["n_salto"])

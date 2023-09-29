@@ -13,7 +13,7 @@ from .estructuras import (
     Cadena,
     GramaticaLibreContextoDict,
     GramaticaLibreContextoMap,
-    MultiProduccion,
+    MultiRegla,
     Simbolo,
     Terminal,
     UnionCadenas,
@@ -146,12 +146,12 @@ class ParserBNFLibreContexto:
             derecha.append(self._consumir_cadena(tokens))
         return UnionCadenas(derecha)
 
-    def _consumir_produccion(self, tokens: deque[Token]) -> MultiProduccion:
+    def _consumir_produccion(self, tokens: deque[Token]) -> MultiRegla:
         """Consume una producción."""
         izq = self._consumir_no_terminal(tokens)
         self._consumir_signo_de_produccion(tokens)
         der = self._consumir_derecha(tokens)
-        return MultiProduccion(izq, der)
+        return MultiRegla(izq, der)
 
     def _consumir_gramatica(self, tokens: deque[Token]) -> GramaticaLibreContextoMap:
         """Consume una gramática."""

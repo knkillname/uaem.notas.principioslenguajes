@@ -110,8 +110,8 @@ class Cadena(tuple[Simbolo]):
         return f"${' '.join(_latex(s) for s in self)}$"
 
 
-class Produccion(NamedTuple):
-    """Representa una producción con una cadena a la derecha."""
+class Regla(NamedTuple):
+    """Representa una regla de producción."""
 
     izquierda: Variable
     derecha: Cadena
@@ -157,7 +157,7 @@ class DerivacionDict(TypedDict):
     """Representa una derivación de una gramática."""
 
     cadena: NotRequired[Cadena]
-    n_produccion: int
+    n_regla: int
     n_salto: NotRequired[int]
 
 
@@ -176,7 +176,7 @@ class UnionCadenas(tuple[Cadena, ...]):
         return " \\mid ".join(_latex(cad) for cad in self)
 
 
-class MultiProduccion(NamedTuple):
+class MultiRegla(NamedTuple):
     """Representa una producción con varias cadenas a la derecha."""
 
     izquierda: Variable
