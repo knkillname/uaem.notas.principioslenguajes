@@ -5,6 +5,7 @@ FROM buildpack-deps:bookworm
 # Assembly, C/C++, Haskell, Java, Prolog, Python, SQL, etc.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get --yes install --no-install-recommends \
+    bison \
     build-essential \
     graphviz \
     graphviz-dev \
