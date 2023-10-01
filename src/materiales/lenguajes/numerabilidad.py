@@ -1,7 +1,10 @@
 """Módulo para trabajar con lenguajes numerables."""
 import functools
 import itertools
-from typing import Iterator
+from collections.abc import Iterable, Iterator
+from typing import TypeVar
+
+import numpy as np
 
 
 def cmp_shortlex(cadena_1: str, cadena_2: str) -> int:
@@ -51,3 +54,36 @@ def estrella(alfabeto: str) -> Iterator[str]:
     for longitud in itertools.count():  # 0, 1, 2, ...
         for cadena in itertools.product(alfabeto, repeat=longitud):
             yield "".join(cadena)
+
+
+T = TypeVar("T")
+
+
+def muestra(iterable: Iterable[T], n_elementos: int, orden: int = 16) -> list[T]:
+    """
+    Devuelve una muestra aleatoria de elementos de un iterable infinito.
+
+    Parámetros
+    ----------
+    iterable : Iterable[T]
+        Un iterable infinito.
+    n_elementos : int
+        Número de elementos a tomar de iterable.
+    orden : int, opcional
+        Orden de la muestra. Entre más grande sea, más grandes serán los
+        índices de los elementos tomados. Por defecto es 16.
+
+    Devuelve
+    --------
+    list[T]
+        Una lista de n_elementos elementos tomados aleatoriamente de
+        iterable.
+    """
+    indices = np.zeros(n_elementos + 1, dtype=int)
+    indices[1:] = np.random.geometric(1 / 2**orden, size=n_elementos)
+    indices.sort()
+    indices = np.diff(indices)
+
+    iterator = iter(iterable)
+    # Usar islice para obtener los elementos de iterable en los índices dados
+    return [next(itertools.islice(iterator, i, None)) for i in indices]

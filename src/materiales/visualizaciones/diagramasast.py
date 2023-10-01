@@ -1,11 +1,14 @@
+"""Visualización de un AST"""
 import ast
 import html
 
-import pygraphviz
+import pygraphviz  # type: ignore
 
 
 class DiagramaAST:
     """Visualización de un AST"""
+
+    # pylint: disable=too-few-public-methods
 
     attrs_arista = {
         "fontcolor": "darkolivegreen",
@@ -25,7 +28,7 @@ class DiagramaAST:
 
     def _producir_arbol(self):
         self._arbol = pygraphviz.AGraph(directed=True)
-        raiz = self._visitar(self.raiz)
+        self._visitar(self.raiz)
 
     def _visitar(self, nodo: ast.AST) -> str:
         """Recorrido en profundidad del AST"""

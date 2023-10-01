@@ -109,7 +109,7 @@ Ejecútalo desde la terminal usando el siguiente comando:
 ```
 
 Prueba escribiendo algo simple como `1 2 + 3 *` y presiona la tecla ↲.
-Para salir presiona la combinación de teclas **Ctrl+Z**.
+Para salir presiona la combinación de teclas **Ctrl+D**.
 
 [1]: https://www.gnu.org/software/bison/
 [2]: https://www.gnu.org/software/bison/manual/html_node/RPN-Calc.html

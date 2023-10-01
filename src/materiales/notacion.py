@@ -1,8 +1,8 @@
 """Módulo para la notación de objetos matemáticos."""
 
 import itertools
-from collections.abc import Hashable, Iterable, Sequence
-from typing import Any, TypeVar
+from collections.abc import Hashable, Iterable, Iterator, Sequence
+from typing import Any, TypeVar, overload
 
 from materiales.lenguajes.estructuras import Terminal
 from materiales.lenguajes.latex import obtener_latex
@@ -31,11 +31,21 @@ class Lenguaje(Sequence[str]):
 
     def __init__(self, iterable: Iterable[str], *, rebanada: slice) -> None:
         self._rebanada = rebanada
-        self._datos = list(
+        self._datos: list[str] = list(
             itertools.islice(iterable, rebanada.start, rebanada.stop, rebanada.step)
         )
 
+    @overload
     def __getitem__(self, indice: int) -> str:
+        ...
+
+    @overload
+    def __getitem__(self, indice: slice) -> "Lenguaje":
+        ...
+
+    def __getitem__(self, indice):
+        if isinstance(indice, slice):
+            return Lenguaje(self._datos[indice], rebanada=slice(0, None, None))
         return self._datos[indice]
 
     def __len__(self) -> int:
@@ -43,6 +53,7 @@ class Lenguaje(Sequence[str]):
 
     def _repr_latex_(self) -> str:
         # pylint: disable=protected-access
+        cadenas: Iterator[str]
         cadenas = (obtener_latex(Terminal(cadena)) for cadena in self._datos)
         cadenas = itertools.chain(cadenas, (r"\ldots",))
         return rf"$\{{{', '.join(cadenas)}\}}$"

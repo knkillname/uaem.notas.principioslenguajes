@@ -1,3 +1,4 @@
+"""Funciones para trabajar con LaTeX."""
 from typing import Any
 
 

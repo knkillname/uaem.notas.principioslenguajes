@@ -8,7 +8,7 @@ from collections.abc import Collection, Iterator, Mapping, Sequence
 from functools import cached_property
 from typing import NamedTuple, Self
 
-import pygraphviz
+import pygraphviz  # type: ignore
 
 import materiales.lenguajes.latex  # type: ignore
 
@@ -148,6 +148,7 @@ class GramaticaLibreContexto(Mapping[Variable, Sequence[Cadena]]):
 
     def producir_lenguaje(self) -> Iterator[str]:
         """Enumera todas las cadenas del lenguaje de la gramática."""
+        cadenas: collections.deque[list[Simbolo]]
         cadenas = collections.deque([[self.variable_inicial]])
         while cadenas:
             palabra = cadenas.popleft()
@@ -161,6 +162,7 @@ class GramaticaLibreContexto(Mapping[Variable, Sequence[Cadena]]):
                 continue
             # Realizar todas las sustituciones posibles para esa variable.
             variable = palabra[i]
+            assert isinstance(variable, Variable)
             for sustitucion in self[variable]:
                 nueva = [*palabra[:i], *sustitucion, *palabra[i + 1 :]]
                 cadenas.append(nueva)  # Agregar la nueva palabra al final de la cola.
@@ -276,6 +278,7 @@ class Derivacion:
                 rf"{_latex(self._cadena)} \qquad {comentario_fmt.format(n_regla)}$"
             )
         lineas = [r"\begin{align*}"]  # Lista de líneas de LaTeX.
+        cadenas: Iterator[Cadena]
         cadenas = (derivacion["cadena"] for derivacion in self._historial)
         cadenas = itertools.chain(cadenas, (self._cadena,))  # Agregar la cadena final.
         reglas = (derivacion["n_regla"] + 1 for derivacion in self._historial)
