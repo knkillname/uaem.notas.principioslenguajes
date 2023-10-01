@@ -125,6 +125,27 @@ El contenedor está basado en Linux porque es el sistema operativo más utilizad
 en el área de las ciencias de la computación, tiene un gran soporte para
 herramientas de desarrollo, y es de código abierto.
 
+### Me gustaría aprender a usar Linux. ¿Qué recomienda?
+
+Existen varias guías para aprender a usar Linux, algunas completamente
+gratuitas, pero en general recomiendo mirar los siguientes recursos:
+
+- Video [🐧 Linux para principiantes](https://youtu.be/tdjGchccSws) explica cómo
+  instalar Linux en una computadora y ofrece un paseo rápido por el entorno de
+  escritorio.
+- Sitio web [Guía de escritorio de Ubuntu](https://help.ubuntu.com/stable/ubuntu-help/).
+  Esta es una guía bastante completa acerca del uso básico del escritorio de
+  Ubuntu y, aunque no tiene muchas ilustraciones, es fácil de seguir y está
+  disponible en español.
+- Video [Aprende linux ahora!](https://youtu.be/L906Kti3gzE) explica los
+  conceptos básicos de Linux así como el uso de la terminal.
+- Lista de reproducción [Curso completo de Linux desde cero para principiantes](https://www.youtube.com/playlist?list=PL2Z95CSZ1N4FKsZQKqCmbylDqssYFJX5A). Este es un curso bastante
+  completo acerca del uso de la terminal en Linux así como sus conceptos.
+
+Todo sea dicho, Linux es un ecosistema enorme, así que no te preocupes si no
+entiendes todo de una vez o no te gusta tu distribución de Linux; asegúrate de
+probar varias distribuciones y de encontrar la que más te guste.
+
 ### ¿Me puede ayudar con mi tarea de esta u otra materia?
 
 No puedo porque ando siempre en [#ModoChamba][12].
