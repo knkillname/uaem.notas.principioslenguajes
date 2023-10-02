@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg width="381.69" height="359.51" version="1.1" viewBox="0 0 381.69 359.51" xmlns="http://www.w3.org/2000/svg">
+ <g transform="translate(-293.19 -188.03)">
+  <circle cx="471.97" cy="368.76" r="176.28" fill="#a00" stroke="#000" stroke-width="5"/>
+  <circle cx="459" cy="355.78" r="148.32" fill="#f00" stroke-width=".8414"/>
+  <ellipse cx="381.89" cy="284.26" rx="35.962" ry="35.053" fill="#fff" stroke-width=".20141"/>
+  <text x="381.70245" y="393.63586" fill="#ffffff" font-family="monospace" font-size="46.936px" stroke-width="3.9113" xml:space="preserve"><tspan x="381.70245" y="393.63586" fill="#ffffff" font-family="monospace" stroke-width="3.9113">Objeto</tspan></text>
+  <g>
+   <g transform="matrix(.93905 0 0 .91531 21.072 27.03)" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="5.3932">
+    <path d="m432.38 178.59h86.789c6.127 66.625 1.2845 80.938 2.1603 138.11h-130.41c-7.5224-47.257-2.8078-48.651-2.1603-88.217z" fill="#ff0"/>
+    <path d="m432.38 178.59-0.40609 30.526c-14.691-12.698-28.38 15.041-43.213 19.37z" fill="#808000"/>
+   </g>
+   <text transform="scale(1.0129 .98728)" x="403.81342" y="279.86191" fill="#000000" font-family="monospace" font-size="41.028px" stroke-linecap="round" stroke-linejoin="round" stroke-width="17.095" xml:space="preserve"><tspan x="403.81342" y="279.86191" fill="#000000" stroke-width="17.095">foo</tspan></text>
+   <g transform="translate(16.69 43.207)" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="5">
+    <path d="m583.03 221.47h70.897c-11.36 41.002 0.93154 66.021 1.7648 112.82h-106.53c-6.145-38.604-2.2937-39.743-1.7648-72.064z" fill="#ff0"/>
+    <path d="m583.03 221.47 0.67191 35.631-36.304 5.1281z" fill="#808000"/>
+   </g>
+   <text x="583.98999" y="341.25836" fill="#000000" font-family="monospace" font-size="36.151px" stroke-linecap="round" stroke-linejoin="round" stroke-width="15.063" xml:space="preserve"><tspan x="583.98999" y="341.25836" fill="#000000" stroke-width="15.063">bar</tspan></text>
+   <circle cx="471.97" cy="368.76" r="176.28" fill="#a00" stroke="#000" stroke-width="5"/>
+  </g>
+  <circle cx="459" cy="355.78" r="148.32" fill="#f00" stroke-width=".8414"/>
+  <ellipse cx="381.89" cy="284.26" rx="35.962" ry="35.053" fill="#fff" stroke-width=".20141"/>
+  <text x="381.70245" y="393.63586" fill="#ffffff" font-family="monospace" font-size="46.936px" stroke-width="3.9113" xml:space="preserve"><tspan x="381.70245" y="393.63586" fill="#ffffff" font-family="monospace" stroke-width="3.9113">Objeto</tspan></text>
+  <g stroke-linecap="round" stroke-linejoin="round">
+   <g transform="matrix(.93905 0 0 .91531 21.072 27.03)" stroke="#000" stroke-width="5.3932">
+    <path d="m432.38 178.59h86.789c6.127 66.625 1.2845 80.938 2.1603 138.11h-130.41c-7.5224-47.257-2.8078-48.651-2.1603-88.217z" fill="#ff0"/>
+    <path d="m432.38 178.59-0.40609 30.526c-14.691-12.698-28.38 15.041-43.213 19.37z" fill="#808000"/>
+   </g>
+   <text transform="scale(1.0129 .98728)" x="403.81342" y="279.86191" fill="#000000" font-family="monospace" font-size="41.028px" stroke-width="17.095" xml:space="preserve"><tspan x="403.81342" y="279.86191" fill="#000000" stroke-width="17.095">foo</tspan></text>
+   <g transform="translate(16.69 43.207)" stroke="#000" stroke-width="5">
+    <path d="m583.03 221.47h70.897c-11.36 41.002 0.93154 66.021 1.7648 112.82h-106.53c-6.145-38.604-2.2937-39.743-1.7648-72.064z" fill="#ff0"/>
+    <path d="m583.03 221.47 0.67191 35.631-36.304 5.1281z" fill="#808000"/>
+   </g>
+   <text x="583.98999" y="341.25836" fill="#000000" font-family="monospace" font-size="36.151px" stroke-width="15.063" xml:space="preserve"><tspan x="583.98999" y="341.25836" fill="#000000" stroke-width="15.063">bar</tspan></text>
+  </g>
+ </g>
+</svg>
