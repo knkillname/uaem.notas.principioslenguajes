@@ -13,6 +13,7 @@
         "editor.defaultFormatter": "ms-python.black-formatter",
     },
     "black-formatter.importStrategy": "useBundled",
+    "cmake.configureOnOpen": false,
     "cSpell.language": "en,es",
     "cSpell.words": [
         "arbol",
@@ -78,6 +79,7 @@
         "tokenizar",
         "varepsilon"
     ],
+    "C_Cpp.clang_format_style": "Google",
     "editor.formatOnSave": true,
     "editor.rulers": [
         80

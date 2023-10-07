@@ -7,6 +7,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get --yes install --no-install-recommends \
     bison \
     build-essential \
+    gdb \
     graphviz \
     graphviz-dev \
     haskell-stack \
