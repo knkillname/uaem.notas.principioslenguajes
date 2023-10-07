@@ -1,11 +1,9 @@
 #include <iostream>
 
 int main() {
-  int n_max, i, j;
+  int n_max, i = 1, j = 0;
   std::cout << "n = ";
   std::cin >> n_max;
-  i = 1;
-  j = 0;
 
 loop:
   if (j <= n_max) goto iterate;
