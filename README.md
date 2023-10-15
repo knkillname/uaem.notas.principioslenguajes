@@ -68,6 +68,21 @@ El repositorio está estructurado de la siguiente manera:
 
 ## 3. Preguntas frecuentes
 
+### ¿Qué es Markdown y cómo lo uso para seguir las prácticas y tareas?
+
+[Markdown][9] es un lenguaje formal para escribir texto enriquecido (con letras
+en negritas, cursivas, etc.).
+Todo programador debería considerar Markdown porque es muy útil para escribir
+documentación de código y tomar notas rápidas.
+Lo usan sitios como GitHub, Reddit, Stack Overflow, y muchos otros.
+Te recomiendo mirar [este tutorial](https://youtu.be/X5mkZXmaKp4) para
+aprender a usarlo en 3 minutos.
+
+Algunas variantes de Markdown también soportan ecuaciones en lenguaje $\LaTeX$,
+y son particularmente muy usadas en este repositorio.
+Revisa el capítulo 3 de [La introducción no-tan-corta a
+$\LaTeX\,2_\varepsilon$][10] para aprender más.
+
 ### ¿Qué es un cuaderno de Jupyter?
 
 Los cuadernos de [Jupyter][8] son documentos interactivos que permiten combinar
@@ -79,10 +94,7 @@ combinar la teoría con la práctica de una manera muy sencilla.
 
 Jupyter usa un sistema de celdas para organizar el contenido de los cuadernos;
 algunas son celdas de código (generalmente Python), otras son celdas de texto
-en formato [Markdown][9].
-Asimismo, el texto puede contener ecuaciones escritas en $\LaTeX$, como se
-describe en el capítulo 3 de [La introducción no-tan-corta a
-$\LaTeX\,2_\varepsilon$][10].
+en formato Markdown.
 
 ### ¿Qué es un repositorio de GitHub y cómo lo utilizo?
 
