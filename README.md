@@ -73,7 +73,7 @@ El repositorio está estructurado de la siguiente manera:
 [Markdown][9] es un lenguaje formal para escribir texto enriquecido (con letras
 en negritas, cursivas, etc.).
 Todo programador debería considerar Markdown porque es muy útil para escribir
-documentación de código y tomar notas rápidas.
+documentación de código y tomar notas rápidas (ver [appflowy][20]).
 Lo usan sitios como GitHub, Reddit, Stack Overflow, y muchos otros.
 Te recomiendo mirar [este tutorial](https://youtu.be/X5mkZXmaKp4) para
 aprender a usarlo en 3 minutos.
@@ -157,6 +157,10 @@ gratuitas, pero en general recomiendo mirar los siguientes recursos:
 Todo sea dicho, Linux es un ecosistema enorme, así que no te preocupes si no
 entiendes todo de una vez o no te gusta tu distribución de Linux; asegúrate de
 probar varias distribuciones y de encontrar la que más te guste.
+Personalmente he probado [Debian][13], [Ubuntu][14], [Fedora][15],
+[Elementary OS][16], [Linux Mint][17], [Pop!_OS][18], y [OpenSUSE][19] entre
+otros, pero uso Ubuntu desde hace 15 años porque simplemente funciona y permite
+concentrarme en el trabajo.
 
 ### ¿Me puede ayudar con mi tarea de esta u otra materia?
 
@@ -178,3 +182,11 @@ Respuesta corta: No. Respuesta larga: Noooooooooooooooooooooooooooooooooooooo.
 [10]: http://mirrors.ctan.org/info/lshort/spanish/lshort-letter.pdf
 [11]: https://docs.docker.com/desktop/use-desktop/
 [12]: https://twitter.com/hashtag/ModoChamba
+[13]: https://www.debian.org/
+[14]: https://ubuntu.com/
+[15]: https://getfedora.org/
+[16]: https://elementary.io/
+[17]: https://linuxmint.com/
+[18]: https://pop.system76.com/
+[19]: https://www.opensuse.org/
+[20]: https://appflowy.io/
