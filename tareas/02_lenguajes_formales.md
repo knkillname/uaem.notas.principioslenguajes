@@ -14,7 +14,7 @@ es ambigua:
 $$\begin{align*}
 E &\to T | T \texttt{+} E | T \texttt{-} E \\
 T &\to A | E \texttt{*} T \\
-A &\to I | \texttt{-}(A) | (E) \\
+A &\to I | \texttt{-(}A\texttt{)} | \texttt{(}E\texttt{)} \\
 I &\to \texttt{a} | \texttt{b} | I\texttt{a} | I\texttt{b} \\
 \end{align*}$$
 
@@ -27,7 +27,7 @@ este ejemplo, bla bla bla." -->
 segmento de código sea válido, y justifica tu respuesta:
 
 ```basic
-if foo then if bar then baz else baz
+if foo then if bar then baz else qux
 ```
 
 *Respuesta:*
@@ -68,4 +68,5 @@ Tu misión es explicar por qué $L$ no es regular, es decir, por qué cualquier
 gramática que genere $L$ debe tener al menos una regla que no sea como de las
 tres formas mencionadas anteriormente.
 
-*Respuesta:* <!-- Tu respuesta aquí. -->
+*Respuesta:* <!-- No creo que se pueda. Porque si intetmos hacer una
+grámitca (así y asá) ... encontramos entonces que tiene el problema ... -->
