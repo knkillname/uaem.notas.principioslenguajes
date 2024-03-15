@@ -1,15 +1,15 @@
 {
     "[python]": {
         "editor.codeActionsOnSave": {
-            "source.organizeImports": true,
-            "source.fixAll": true
+            "source.organizeImports": "explicit",
+            "source.fixAll": "explicit"
         },
         "diffEditor.ignoreTrimWhitespace": false,
         "editor.rulers": [
             72,
             88
         ],
-        "editor.wordBasedSuggestions": false,
+        "editor.wordBasedSuggestions": "off",
         "editor.defaultFormatter": "ms-python.black-formatter",
     },
     "black-formatter.importStrategy": "useBundled",
