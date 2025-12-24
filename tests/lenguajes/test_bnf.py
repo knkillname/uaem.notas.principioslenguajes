@@ -1,4 +1,5 @@
 """Pruebas unitarias para el módulo materiales.lenguajes.bnf."""
+
 import unittest
 
 from materiales.lenguajes.bnf import ParserBNFLibreContexto, Token
@@ -8,7 +9,7 @@ from materiales.lenguajes.estructuras import Terminal, Variable
 class TestParserBNFLibreContexto(unittest.TestCase):
     """Prueba la clase ParserBNFLibreContexto."""
 
-    def test_tokenizar(self):
+    def test_tokenizar(self) -> None:
         """Prueba el método tokenizar."""
         entrada = """
         # Esto es un comentario.
@@ -53,7 +54,7 @@ class TestParserBNFLibreContexto(unittest.TestCase):
         with self.assertRaises(SyntaxError):
             list(ParserBNFLibreContexto().tokenizar("S ::= <A> | <B> #"))
 
-    def test_diseccionar(self):
+    def test_diseccionar(self) -> None:
         """Prueba el método diseccionar."""
         entrada = """
         # Esto es un comentario.
@@ -73,3 +74,26 @@ class TestParserBNFLibreContexto(unittest.TestCase):
 
         with self.assertRaises(SyntaxError):
             ParserBNFLibreContexto().diseccionar("S ::= <A> | <B> #")
+
+    def test_error_no_terminal_en_izquierda(self) -> None:
+        """Falla si la izquierda de la producción no es NO_TERMINAL."""
+        # Izquierda comienza con un terminal en vez de no terminal
+        with self.assertRaises(SyntaxError):
+            ParserBNFLibreContexto().diseccionar('"a" ::= <A>')
+
+    def test_error_signo_produccion_ausente(self) -> None:
+        """Falla si no aparece '::=' tras el no terminal."""
+        # Falta '::=' entre la izquierda y la derecha
+        with self.assertRaises(SyntaxError):
+            ParserBNFLibreContexto().diseccionar('<A> "a"')
+
+    def test_error_simbolo_en_cadena(self) -> None:
+        """Falla si la cadena comienza con un símbolo inválido."""
+        # La derecha empieza con '|' en vez de un símbolo válido
+        with self.assertRaises(SyntaxError):
+            ParserBNFLibreContexto().diseccionar('<A> ::= | "a"')
+
+    def test_error_cadena_inicio_invalido(self) -> None:
+        """Falla si la cadena comienza con token inválido (caso adicional)."""
+        with self.assertRaises(SyntaxError):
+            ParserBNFLibreContexto().diseccionar('<B> ::= | "b"')

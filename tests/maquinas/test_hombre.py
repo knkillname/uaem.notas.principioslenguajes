@@ -1,6 +1,8 @@
 """Pruebas para la clase ComputadoraHombrePequenno"""
+
 import itertools
 import unittest
+from collections import deque
 
 from materiales.maquinas.hombre import (
     ComputadoraDetenida,
@@ -12,13 +14,13 @@ from materiales.maquinas.hombre import (
 class TestCHP(unittest.TestCase):
     """Pruebas unitarias para la clase ComputadoraHombrePequenno."""
 
-    def test_detener(self):
+    def test_detener(self) -> None:
         """Verificar que la computadora se detiene correctamente."""
         computadora = ComputadoraHombrePequenno()
         computadora.detener()
         self.assertEqual(computadora.estado, Estado.DETENIDA)
 
-    def test_reiniciar(self):
+    def test_reiniciar(self) -> None:
         """Verificar que la computadora se reinicia correctamente."""
         computadora = ComputadoraHombrePequenno()
         computadora.reiniciar()
@@ -28,7 +30,7 @@ class TestCHP(unittest.TestCase):
         self.assertEqual(list(computadora.entrada), [])
         self.assertEqual(list(computadora.salida), [])
 
-    def test_cargar_programa(self):
+    def test_cargar_programa(self) -> None:
         """Verificar que la computadora carga correctamente."""
         computadora = ComputadoraHombrePequenno()
         computadora.cargar_programa([1, 2, 3])
@@ -37,23 +39,23 @@ class TestCHP(unittest.TestCase):
         computadora.cargar_programa([1, 2, 3])
         self.assertEqual(list(computadora.memoria), [1, 2, 3] + [0] * 97)
 
-    def test_cargar_entrada(self):
+    def test_cargar_entrada(self) -> None:
         """Verificar que la computadora carga la entrada correctamente."""
         computadora = ComputadoraHombrePequenno()
         computadora.cargar_entrada([1, 2, 3])
         self.assertEqual(list(computadora.entrada), [1, 2, 3])
-        computadora.entrada = [999] * 100
+        computadora.entrada = deque([999] * 100)
         computadora.cargar_entrada([1, 2, 3])
         self.assertEqual(list(computadora.entrada), [1, 2, 3])
 
-    def test_op_hlt(self):
+    def test_op_hlt(self) -> None:
         """Verificar que la computadora se detiene correctamente."""
         computadora = ComputadoraHombrePequenno()
         with self.assertRaises(ComputadoraDetenida):
             computadora.transicion(ignorar_detener=False)
         self.assertEqual(computadora.estado, Estado.DETENIDA)
 
-    def test_op_add(self):
+    def test_op_add(self) -> None:
         """Verificar que la computadora suma correctamente."""
         sumandos = [0, -1, 1, 2, -2, 3, -3, 97, -97]
         pruebas = itertools.product(sumandos, repeat=2)
@@ -80,7 +82,7 @@ class TestCHP(unittest.TestCase):
             with self.assertRaises(OverflowError):
                 computadora.transicion()
 
-    def test_op_sub(self):
+    def test_op_sub(self) -> None:
         """Verificar que la computadora resta correctamente."""
         minuendos = [0, -1, 1, 2, -2, 3, -3, 97, -97]
         pruebas = itertools.product(minuendos, repeat=2)
@@ -107,7 +109,7 @@ class TestCHP(unittest.TestCase):
             with self.assertRaises(OverflowError):
                 computadora.transicion()
 
-    def test_op_sta(self):
+    def test_op_sta(self) -> None:
         """Verificar que la computadora almacena correctamente."""
         valores = [0, -1, 1, -999, 999]
         for posicion in range(1, 100):
@@ -119,7 +121,7 @@ class TestCHP(unittest.TestCase):
                     computadora.transicion()
                     self.assertEqual(computadora.memoria[posicion], valor)
 
-    def test_op_lda(self):
+    def test_op_lda(self) -> None:
         """Verificar que la computadora carga correctamente."""
         valores = [0, -1, 1, -999, 999]
         for posicion in range(1, 100):
@@ -131,7 +133,7 @@ class TestCHP(unittest.TestCase):
                     computadora.transicion()
                     self.assertEqual(computadora.acumulador, valor)
 
-    def test_op_bra(self):
+    def test_op_bra(self) -> None:
         """Verificar que la computadora salta correctamente."""
         for posicion in range(1, 100):
             with self.subTest(f"{posicion}"):
@@ -140,7 +142,7 @@ class TestCHP(unittest.TestCase):
                 computadora.transicion()
                 self.assertEqual(computadora.contador, posicion)
 
-    def test_op_brz(self):
+    def test_op_brz(self) -> None:
         """Verificar que la computadora salta correctamente."""
         acumuladores = [0, -1, 1]
         for posicion in range(1, 100):
@@ -153,7 +155,7 @@ class TestCHP(unittest.TestCase):
                     esperada = posicion if acum == 0 else 1
                     self.assertEqual(computadora.contador, esperada)
 
-    def test_op_brp(self):
+    def test_op_brp(self) -> None:
         """Verificar que la computadora salta correctamente."""
         acumuladores = [0, -1, 1]
         for posicion in range(1, 100):
@@ -166,7 +168,7 @@ class TestCHP(unittest.TestCase):
                     esperada = posicion if acum > 0 else 1
                     self.assertEqual(computadora.contador, esperada)
 
-    def test_op_in(self):
+    def test_op_in(self) -> None:
         """Verificar que la computadora lee correctamente."""
         valores = [0, -1, 1, -999, 999]
         for valor in valores:
@@ -177,7 +179,7 @@ class TestCHP(unittest.TestCase):
                 computadora.transicion()
                 self.assertEqual(computadora.acumulador, valor)
 
-    def test_op_out(self):
+    def test_op_out(self) -> None:
         """Verificar que la computadora escribe correctamente."""
         valores = [0, -1, 1, -999, 999]
         for valor in valores:
