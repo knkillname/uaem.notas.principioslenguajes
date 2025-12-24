@@ -3,6 +3,7 @@
 Este módulo contiene la clase `VisorHexadecimal`, que permite
 visualizar bytes en formato hexadecimal.
 """
+
 import string
 from collections.abc import Callable
 from typing import cast

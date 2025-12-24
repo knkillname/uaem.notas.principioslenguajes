@@ -4,6 +4,7 @@ Este módulo contiene la clase ParserBNFLibreContexto, que permite
 analizar gramáticas en notación BNF. La gramática debe ser libre de
 contexto.
 """
+
 import json
 import re
 from collections import deque

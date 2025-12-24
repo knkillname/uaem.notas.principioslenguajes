@@ -1,8 +1,11 @@
 """Visualización de un AST"""
+
 import ast
 import html
 
-import pygraphviz  # type: ignore
+import pygraphviz  # type: ignore[import-untyped]
+
+from .utils import dibujar_svg
 
 
 class DiagramaAST:
@@ -26,7 +29,7 @@ class DiagramaAST:
         self._cuenta_nodo = 0
         self._producir_arbol()
 
-    def _producir_arbol(self):
+    def _producir_arbol(self) -> None:
         self._arbol = pygraphviz.AGraph(directed=True)
         self._visitar(self.raiz)
 
@@ -51,5 +54,5 @@ class DiagramaAST:
                 self._arbol.add_edge(nombre, hijo, label=campo, **self.attrs_arista)
         return nombre
 
-    def _repr_svg_(self):
-        return self._arbol.draw(format="svg", prog="dot").decode("utf-8")
+    def _repr_svg_(self) -> str:
+        return dibujar_svg(self._arbol)

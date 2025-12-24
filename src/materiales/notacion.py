@@ -2,7 +2,7 @@
 
 import itertools
 from collections.abc import Hashable, Iterable, Iterator, Sequence
-from typing import Any, TypeVar, overload
+from typing import Any, TypeVar, Union, overload
 
 from materiales.lenguajes.estructuras import Terminal
 from materiales.lenguajes.latex import obtener_latex
@@ -36,14 +36,12 @@ class Lenguaje(Sequence[str]):
         )
 
     @overload
-    def __getitem__(self, indice: int) -> str:
-        ...
+    def __getitem__(self, indice: int) -> str: ...
 
     @overload
-    def __getitem__(self, indice: slice) -> "Lenguaje":
-        ...
+    def __getitem__(self, indice: slice) -> "Lenguaje": ...
 
-    def __getitem__(self, indice):
+    def __getitem__(self, indice: Union[int, slice]) -> Union[str, "Lenguaje"]:
         if isinstance(indice, slice):
             return Lenguaje(self._datos[indice], rebanada=slice(0, None, None))
         return self._datos[indice]

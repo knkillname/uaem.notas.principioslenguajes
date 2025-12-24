@@ -1,4 +1,5 @@
 """Módulo para trabajar con lenguajes numerables."""
+
 import functools
 import itertools
 from collections.abc import Iterable, Iterator
@@ -85,5 +86,13 @@ def muestra(iterable: Iterable[T], n_elementos: int, orden: int = 16) -> list[T]
     indices = np.diff(indices)
 
     iterator = iter(iterable)
+    result = []
     # Usar islice para obtener los elementos de iterable en los índices dados
-    return [next(itertools.islice(iterator, i, None)) for i in indices]
+    for skip_count in indices:
+        try:
+            elem = next(itertools.islice(iterator, skip_count, None))
+            result.append(elem)
+        except StopIteration:
+            # Si el iterador se agota, salir del bucle
+            break
+    return result

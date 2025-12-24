@@ -1,4 +1,5 @@
 """Estructuras de datos para representar gramáticas libres de contexto."""
+
 import abc
 from collections.abc import Hashable, Iterable, Mapping, Sequence
 from functools import total_ordering
@@ -95,7 +96,7 @@ class Cadena(tuple[Simbolo]):
     """Representa una cadena de símbolos terminales y variables."""
 
     def __new__(cls, __iterable: Iterable[Simbolo]) -> Self:
-        return super().__new__(cls, filter(None, __iterable))  # type: ignore
+        return super().__new__(cls, filter(None, __iterable))
 
     def __str__(self) -> str:
         return "".join(str(s) for s in self)

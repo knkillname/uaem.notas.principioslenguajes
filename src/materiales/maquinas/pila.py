@@ -1,7 +1,13 @@
+"""Máquina de Pila.
+
+Este módulo implementa una máquina abstracta basada en una pila
+de datos con múltiples operadores para manipularla.
+"""
+
 from typing import Any, Self
 
 
-class MaquinaDePila:
+class MaquinaDePila:  # pylint: disable=too-many-public-methods
     """Clase que implementa una máquina de pila.
 
     Una máquina de pila es un tipo de máquina abstracta en la que las

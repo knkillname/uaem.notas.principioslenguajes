@@ -17,6 +17,7 @@ Excepciones
 ComputadoraDetenida
     Excepción que se levanta cuando la computadora se detiene.
 """
+
 import collections
 import enum
 from collections.abc import Iterable, Sequence
@@ -107,7 +108,7 @@ class ComputadoraHombrePequenno:
 
     marcador_pos = "▶"
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         *,
         programa: Memoria = (),

@@ -1,4 +1,5 @@
 """Módulo de gramáticas libres de contexto."""
+
 import collections
 import dataclasses
 import html
@@ -8,11 +9,12 @@ from collections.abc import Collection, Iterator, Mapping, Sequence
 from functools import cached_property
 from typing import NamedTuple, Self
 
-import pygraphviz  # type: ignore
+import pygraphviz  # type: ignore[import-untyped]
 
-import materiales.lenguajes.latex  # type: ignore
+import materiales.lenguajes.latex
 
 from .. import notacion
+from ..visualizaciones.utils import dibujar_svg
 from . import bnf
 from .estructuras import (
     Cadena,
@@ -36,7 +38,7 @@ class GramaticaLibreContexto(Mapping[Variable, Sequence[Cadena]]):
         self._validar_gramatica(gramatica)
         self._datos: GramaticaLibreContextoMap = gramatica
 
-    def _validar_gramatica(self, gramatica):
+    def _validar_gramatica(self, gramatica: GramaticaLibreContextoMap) -> None:
         if not isinstance(gramatica, Mapping):
             if isinstance(gramatica, str):
                 clase = self.__class__.__name__
@@ -403,11 +405,7 @@ class ArbolDeDerivacion:
 
     def a_svg(self) -> str:
         """Devuelve una representación SVG del árbol de derivación."""
-        resultado = self._arbol.draw(format="svg", prog="dot")
-        if resultado is None:
-            raise RuntimeError("Error al generar el SVG.")
-        assert isinstance(resultado, bytes)
-        return resultado.decode("utf-8")
+        return dibujar_svg(self._arbol)
 
     @property
     def atributos(self) -> AtributosArbol:

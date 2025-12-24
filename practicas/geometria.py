@@ -1,4 +1,5 @@
 """Cálculo de áreas y perímetros de figuras planas."""
+
 from math import pi
 
 import matplotlib.pyplot as plt
