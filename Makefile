@@ -23,8 +23,8 @@ format: venv
 lint: venv
 	pipenv run isort --check src notas tests
 	pipenv run black --check src notas tests
+	pipenv run mypy --strict src tests
 	pipenv run pylint src notas tests
-	pipenv run mypy src tests
 
 test: venv
 	pipenv run python -m unittest discover -s tests
