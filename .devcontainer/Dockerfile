@@ -1,5 +1,5 @@
-# Usar Debian Linux 12 (Bookworm) como base para la imagen.
-FROM buildpack-deps:bookworm
+# Usar Debian Linux como base para la imagen.
+FROM buildpack-deps:stable
 
 # Instalar compiladores e intérpretes de varios lenguajes de programación:
 # Assembly, C/C++, Haskell, Java, Prolog, Python, SQL, etc.
@@ -12,7 +12,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     graphviz-dev \
     haskell-stack \
     nasm \
-    openjdk-17-jdk \
+    openjdk-25-jdk \
     pipenv \
     gprolog \
     python3-dev \

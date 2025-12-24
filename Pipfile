@@ -4,24 +4,24 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-ipykernel = "~=6.25"
-matplotlib = "~=3.7"
-networkx = "~=3.1"
-numpy = "~=1.25"
-pandas = "~=2.0"
-pygraphviz = "~=1.11"
-scipy = "~=1.11"
-sympy = "~=1.12"
+ipykernel = "~=6.31"
+matplotlib = "~=3.10"
+networkx = "~=3.5"
+numpy = "~=2.3"
+pandas = "~=2.3"
+pygraphviz = "~=1.14"
+scipy = "~=1.16"
+sympy = "~=1.14"
 
 [dev-packages]
-black = {version = "~=23.7", extras = ["jupyter"]}
-coverage = "~=7.3"
-isort = "~=5.11"
-mypy = "~=1.5"
-nbconvert = "~=7.8"
-notebook = "~=7.0"
-pylint = "~= 2.17"
-rope = "~=1.9"
+black = {version = "~25.12", extras = ["jupyter"]}
+coverage = "~=7.13"
+isort = "~=7.0"
+mypy = "~=1.19"
+nbconvert = "~=7.16"
+notebook = "~=7.5"
+pylint = "~=4.0"
+rope = "~=1.14"
 
 [requires]
-python_version = "3.11"
+python_version = "3.13"
